@@ -2,10 +2,12 @@
  * 过滤特殊字符
  */
 export function stripscript(str) {
-  var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&;—|{}【】‘；：”“'。，、？]")
+  var pattern = new RegExp(
+    "[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&;—|{}【】‘；：”“'。，、？]"
+  );
   var rs = "";
   for (var i = 0; i < str.length; i++) {
-    rs = rs + str.substr(i, 1).replace(pattern, '');
+    rs = rs + str.substr(i, 1).replace(pattern, "");
   }
   return rs;
 }
@@ -15,7 +17,7 @@ export function stripscript(str) {
  */
 export function validateEmail(value) {
   // 验证邮箱的正则表达式
-  let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+  let reg = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
 
   return !reg.test(value);
 }

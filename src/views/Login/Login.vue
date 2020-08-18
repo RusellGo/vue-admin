@@ -3,7 +3,7 @@
     <div class="login-wrap">
       <ul class="menu-tab">
         <li
-          v-bind:class="{current: currentIndex == index}"
+          v-bind:class="{ current: currentIndex == index }"
           v-for="(item, index) in menuTab"
           v-bind:key="item.id"
           v-on:click="toggleMenu(index)"
@@ -58,7 +58,7 @@
               ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="block">获取验证码</el-button>
+              <el-button type="success" class="block" @click="getSms">获取验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -72,6 +72,9 @@
 </template>
 
 <script>
+import { GetSms } from "@/api/login.js";
+// Vue3.0体验版API
+import { reactive, ref, onMounted } from "@vue/composition-api";
 // 引入特殊字符处理函数 以及表单输入验证函数
 import {
   stripscript,
@@ -82,9 +85,9 @@ import {
 
 export default {
   name: "Login",
-  data() {
+  setup(props, context) {
     // 验证用户名/邮箱
-    var validateUsername = (rule, value, callback) => {
+    let validateUsername = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入用户名"));
       } else if (validateEmail(value)) {
@@ -95,7 +98,7 @@ export default {
       }
     };
     // 验证密码
-    var validatePassword = (rule, value, callback) => {
+    let validatePassword = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
       } else if (validatePass(value)) {
@@ -109,24 +112,24 @@ export default {
       }
     };
     // 验证重复密码
-    var validateCheckPassword = (rule, value, callback) => {
+    let validateCheckPassword = (rule, value, callback) => {
       // 使用v-show进行条件渲染 当model为login时直接通过
-      if (this.model === "login") {
+      if (model.value === "login") {
         callback();
       }
       if (value === "") {
         callback(new Error("请再次输入密码"));
-      } else if (value !== this.ruleForm.password) {
+      } else if (value !== ruleForm.password) {
         callback(new Error("两次密码不一致"));
       } else {
         callback();
       }
     };
     // 验证验证码
-    var validateVerificationCode = (rule, value, callback) => {
+    let validateVerificationCode = (rule, value, callback) => {
       // 验证并处理特殊字符
-      this.ruleForm.verificationCode = stripscript(value);
-      value = this.ruleForm.verificationCode;
+      ruleForm.verificationCode = stripscript(value);
+      value = ruleForm.verificationCode;
 
       if (value === "") {
         return callback(new Error("验证码不能为空"));
@@ -137,44 +140,59 @@ export default {
         callback();
       }
     };
-    return {
-      menuTab: [{ txt: "登录" }, { txt: "注册" }],
-      // 保存点击
-      currentIndex: 0,
-      // 模块值
-      model: "login",
 
-      // element-ui引入 表单数据
-      ruleForm: {
-        username: "",
-        password: "",
-        checkPassword: "",
-        verificationCode: ""
-      },
-      rules: {
-        username: [{ validator: validateUsername, trigger: "blur" }],
-        password: [{ validator: validatePassword, trigger: "blur" }],
-        checkPassword: [{ validator: validateCheckPassword, trigger: "blur" }],
-        verificationCode: [
-          { validator: validateVerificationCode, trigger: "blur" }
-        ]
-      }
-    };
-  },
-  created() {},
-  mounted() {},
-  methods: {
+    /**
+     * 这里面放置data数据、生命周期、自定义的函数
+     */
+    const menuTab = reactive([{ txt: "登录" }, { txt: "注册" }]);
+
+    // 保存点击
+    const currentIndex = ref(0);
+
+    // 模块值
+    const model = ref("login");
+    // 使用ref定义的变量需要通过单一属性 .value 来获取定义的变量值
+
+    // 表单绑定数据
+    const ruleForm = reactive({
+      username: "",
+      password: "",
+      checkPassword: "",
+      verificationCode: ""
+    });
+    // 表单验证
+    const rules = reactive({
+      username: [{ validator: validateUsername, trigger: "blur" }],
+      password: [{ validator: validatePassword, trigger: "blur" }],
+      checkPassword: [{ validator: validateCheckPassword, trigger: "blur" }],
+      verificationCode: [
+        { validator: validateVerificationCode, trigger: "blur" }
+      ]
+    });
+
+    /**
+     * 声明方法
+     */
     // 切换 登录/注册
-    toggleMenu: function(index) {
+    const toggleMenu = index => {
       // 点击赋值 对比 显示高光
-      this.currentIndex = index;
+      currentIndex.value = index;
 
       // 修改模块值
-      this.model = index == 0 ? "login" : "register";
-    },
+      model.value = index == 0 ? "login" : "register";
+    };
+
+    // 获取验证码
+    const getSms = () => {
+      let data = {
+        username: ruleForm.username
+      };
+      GetSms(data);
+    };
+
     // 提交/登录
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    const submitForm = formName => {
+      context.refs[formName].validate(valid => {
         if (valid) {
           alert("submit!");
         } else {
@@ -182,7 +200,24 @@ export default {
           return false;
         }
       });
-    }
+    };
+
+    /**
+     * 生命周期钩子函数
+     */
+    // 挂在完成后
+    onMounted(() => {});
+
+    return {
+      menuTab,
+      currentIndex,
+      model,
+      ruleForm,
+      rules,
+      toggleMenu,
+      getSms,
+      submitForm
+    };
   }
 };
 </script>
