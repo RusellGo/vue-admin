@@ -3,10 +3,10 @@
     <div class="login-wrap">
       <ul class="menu-tab">
         <li
-          v-bind:class="{ current: currentIndex == index }"
+          :class="{ current: currentIndex == index }"
           v-for="(item, index) in menuTab"
-          v-bind:key="item.id"
-          v-on:click="toggleMenu(index)"
+          :key="item.id"
+          @click="toggleMenu(index)"
         >{{ item.txt }}</li>
       </ul>
       <!-- 表单 start -->
@@ -14,18 +14,19 @@
         :model="ruleForm"
         status-icon
         :rules="rules"
-        ref="ruleForm"
+        ref="loginForm"
         class="login-form"
         size="medium"
       >
         <el-form-item prop="username" class="item-form">
-          <label>邮箱</label>
-          <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+          <label for="username">邮箱</label>
+          <el-input id="username" type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
         </el-form-item>
 
         <el-form-item prop="password" class="item-form">
-          <label>密码</label>
+          <label for="password">密码</label>
           <el-input
+            id="password"
             type="password"
             v-model="ruleForm.password"
             autocomplete="off"
@@ -35,8 +36,9 @@
         </el-form-item>
 
         <el-form-item prop="checkPassword" class="item-form" v-show="model === 'register'">
-          <label>确认密码</label>
+          <label for="checkPassword">确认密码</label>
           <el-input
+            id="checkPassword"
             type="password"
             v-model="ruleForm.checkPassword"
             autocomplete="off"
@@ -46,10 +48,11 @@
         </el-form-item>
 
         <el-form-item prop="verificationCode" class="item-form">
-          <label>验证码</label>
+          <label for="verificationCode">验证码</label>
           <el-row :gutter="10">
             <el-col :span="15">
               <el-input
+                id="verificationCode"
                 type="text"
                 v-model="ruleForm.verificationCode"
                 autocomplete="off"
@@ -58,13 +61,24 @@
               ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="block" @click="getSms">获取验证码</el-button>
+              <el-button
+                type="success"
+                class="block"
+                @click="getSms"
+                :disabled="codeButton.status"
+                :loading="codeButton.loading"
+              >{{ codeButton.text }}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="danger" @click="submitForm('ruleForm')" class="login-btn block">提交</el-button>
+          <el-button
+            type="danger"
+            @click="submitForm('loginForm')"
+            class="login-btn block"
+            :disabled="loginButtonStatus"
+          >{{ model === "login" ? "登录" : "注册" }}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -72,7 +86,7 @@
 </template>
 
 <script>
-import { GetSms } from "@/api/login.js";
+import { GetSms, Register } from "@/api/login.js";
 // Vue3.0体验版API
 import { reactive, ref, onMounted } from "@vue/composition-api";
 // 引入特殊字符处理函数 以及表单输入验证函数
@@ -85,6 +99,7 @@ import {
 
 export default {
   name: "Login",
+  // vue3.0新语法
   setup(props, context) {
     // 验证用户名/邮箱
     let validateUsername = (rule, value, callback) => {
@@ -145,14 +160,20 @@ export default {
      * 这里面放置data数据、生命周期、自定义的函数
      */
     const menuTab = reactive([{ txt: "登录" }, { txt: "注册" }]);
-
     // 保存点击
     const currentIndex = ref(0);
-
     // 模块值
     const model = ref("login");
-    // 使用ref定义的变量需要通过单一属性 .value 来获取定义的变量值
-
+    // 登录注册按钮状态
+    const loginButtonStatus = ref(true);
+    // 获取验证码按钮状态
+    const codeButton = reactive({
+      status: false,
+      text: "获取验证码",
+      loading: false
+    });
+    // 验证码重新发送倒计时
+    const timer = ref(null);
     // 表单绑定数据
     const ruleForm = reactive({
       username: "",
@@ -177,24 +198,83 @@ export default {
     const toggleMenu = index => {
       // 点击赋值 对比 显示高光
       currentIndex.value = index;
-
       // 修改模块值
-      model.value = index == 0 ? "login" : "register";
+      model.value = currentIndex.value == 0 ? "login" : "register";
+      // 重置表单 表单ref="loginForm"
+      context.refs.loginForm.resetFields();
     };
-
     // 获取验证码
     const getSms = () => {
-      let data = {
-        username: ruleForm.username
-      };
-      GetSms(data);
-    };
+      // 提示
+      if (ruleForm.username == "") {
+        context.root.$message.error("邮箱不能为空!");
+        return false;
+      }
+      if (validateEmail(ruleForm.username)) {
+        context.root.$message.error("邮箱格式有误，请重新输入!");
+        return false;
+      }
 
-    // 提交/登录
+      // 验证码请求接口 获取验证码 请求参数
+      let requestData = {
+        username: ruleForm.username,
+        module: model.value
+      };
+
+      // 修改 获取验证码状态
+      codeButton.status = true;
+      codeButton.text = "发送中";
+      codeButton.loading = true;
+      // 接口调用
+      GetSms(requestData)
+        .then(result => {
+          // 验证码发送成功消息提示
+          context.root.$message({
+            message: result.data.message,
+            type: "success"
+          });
+          // 启用登录或注册按钮
+          loginButtonStatus.value = false;
+          countDown(60);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
+    // 验证码按钮 倒计时
+    const countDown = time => {
+      timer.value = setInterval(() => {
+        time--;
+        if (time === 0) {
+          // 清除定时器
+          clearInterval(timer.value);
+          codeButton.status = false;
+          codeButton.text = "再次发送";
+        } else {
+          // 取消loading动画
+          codeButton.loading = false;
+          codeButton.text = `倒计时${time}秒`;
+        }
+      }, 1000);
+    };
+    // 提交 登录/注册
     const submitForm = formName => {
       context.refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
+          // 注册接口
+          let requestData = {
+            username: ruleForm.username,
+            password: ruleForm.password,
+            code: ruleForm.verificationCode
+          };
+          Register(requestData)
+            .then(result => {
+              context.root.$message({
+                message: result.data.message,
+                type: "success"
+              });
+            })
+            .catch(error => {});
         } else {
           console.log("error submit!!");
           return false;
@@ -209,11 +289,15 @@ export default {
     onMounted(() => {});
 
     return {
+      // 变量
       menuTab,
       currentIndex,
       model,
+      loginButtonStatus,
+      codeButton,
       ruleForm,
       rules,
+      //方法
       toggleMenu,
       getSms,
       submitForm
