@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { GetSms, Register } from "@/api/login.js";
+import { GetSms, Register, Login } from "@/api/login.js";
 // Vue3.0体验版API
 import { reactive, ref, onMounted } from "@vue/composition-api";
 // 引入特殊字符处理函数 以及表单输入验证函数
@@ -214,13 +214,11 @@ export default {
         context.root.$message.error("邮箱格式有误，请重新输入!");
         return false;
       }
-
       // 验证码请求接口 获取验证码 请求参数
       let requestData = {
         username: ruleForm.username,
         module: model.value
       };
-
       // 修改 获取验证码状态
       codeButton.status = true;
       codeButton.text = "发送中";
@@ -235,14 +233,18 @@ export default {
           });
           // 启用登录或注册按钮
           loginButtonStatus.value = false;
+          // 按钮定时器
           countDown(60);
         })
         .catch(error => {
           console.log(error);
+          // 登录页 获取验证码 -> 邮箱不存在 -> 还原按钮
+          clearCountDown();
         });
     };
     // 验证码按钮 倒计时
     const countDown = time => {
+      clearInterval(timer.value);
       timer.value = setInterval(() => {
         time--;
         if (time === 0) {
@@ -257,24 +259,62 @@ export default {
         }
       }, 1000);
     };
+    // 清除倒计时
+    const clearCountDown = () => {
+      // 还原按钮状态
+      codeButton.status = false;
+      codeButton.text = "获取验证码";
+      codeButton.loading = false;
+      // 清除定时器
+      clearInterval(timer.value);
+    };
+    // 登录 接口调用
+    const login = () => {
+      let requestData = {
+        username: ruleForm.username,
+        password: ruleForm.password,
+        code: ruleForm.verificationCode
+      };
+      Login(requestData)
+        .then(result => {
+          context.root.$message({
+            message: result.data.message,
+            type: "success"
+          });
+        })
+        .catch(error => {});
+    };
+    // 注册 接口调用
+    const register = () => {
+      // 注册接口
+      let requestData = {
+        username: ruleForm.username,
+        password: ruleForm.password,
+        code: ruleForm.verificationCode
+      };
+      Register(requestData)
+        .then(result => {
+          context.root.$message({
+            message: result.data.message,
+            type: "success"
+          });
+          // 注册成功后切换为登录
+          toggleMenu(0);
+          // 切换后按钮还原
+          clearCountDown();
+        })
+        .catch(error => {});
+    };
     // 提交 登录/注册
     const submitForm = formName => {
       context.refs[formName].validate(valid => {
+        // 表单验证通过
         if (valid) {
-          // 注册接口
-          let requestData = {
-            username: ruleForm.username,
-            password: ruleForm.password,
-            code: ruleForm.verificationCode
-          };
-          Register(requestData)
-            .then(result => {
-              context.root.$message({
-                message: result.data.message,
-                type: "success"
-              });
-            })
-            .catch(error => {});
+          if (model.value === "login") {
+            login();
+          } else {
+            register();
+          }
         } else {
           console.log("error submit!!");
           return false;
@@ -285,7 +325,7 @@ export default {
     /**
      * 生命周期钩子函数
      */
-    // 挂在完成后
+    // 挂载完成后
     onMounted(() => {});
 
     return {
