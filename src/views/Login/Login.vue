@@ -88,7 +88,14 @@
 <script>
 import { GetSms, Register, Login } from "@/api/login.js";
 // Vue3.0体验版API
-import { reactive, ref, onMounted } from "@vue/composition-api";
+import {
+  reactive,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  onUnmounted,
+  onBeforeMount
+} from "@vue/composition-api";
 // 引入特殊字符处理函数 以及表单输入验证函数
 import {
   stripscript,
@@ -238,6 +245,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
+          // promise 返回错误
           // 登录页 获取验证码 -> 邮箱不存在 -> 还原按钮
           clearCountDown();
         });
@@ -326,7 +334,10 @@ export default {
      * 生命周期钩子函数
      */
     // 挂载完成后
+    onBeforeMount(() => {});
     onMounted(() => {});
+    onBeforeUnmount(() => {});
+    onUnmounted(() => {});
 
     return {
       // 变量
