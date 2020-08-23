@@ -297,6 +297,8 @@ export default {
             message: result.data.message,
             type: "success"
           });
+
+          context.root.$router.push({ name: "Layout" });
         })
         .catch(error => {});
     };

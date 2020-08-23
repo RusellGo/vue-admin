@@ -10,7 +10,24 @@ const routes = [
   },
   {
     path: "/login",
+    name: "Login",
     component: () => import("../views/Login/Login.vue")
+  },
+  {
+    path: "/layout",
+    name: "Layout",
+    component: () => import("../views/Layout/Layout.vue"),
+    children: [
+      {
+        path: "/layout",
+        redirect: "/layout/console"
+      },
+      {
+        path: "/layout/console",
+        name: "Console",
+        component: () => import("../views/Console/Console.vue")
+      }
+    ]
   }
 ];
 
