@@ -86,6 +86,7 @@
 </template>
 
 <script>
+import sha1 from "js-sha1";
 import { GetSms, Register, Login } from "@/api/login.js";
 // Vue3.0体验版API
 import {
@@ -207,6 +208,11 @@ export default {
       currentIndex.value = index;
       // 修改模块值
       model.value = currentIndex.value == 0 ? "login" : "register";
+      resetForm();
+      clearCountDown();
+    };
+    // 重置表单
+    const resetForm = () => {
       // 重置表单 表单ref="loginForm"
       context.refs.loginForm.resetFields();
     };
@@ -226,10 +232,8 @@ export default {
         username: ruleForm.username,
         module: model.value
       };
-      // 修改 获取验证码状态
-      codeButton.status = true;
-      codeButton.text = "发送中";
-      codeButton.loading = true;
+      // 修改 获取验证码按钮状态
+      updateButtonStatus({ status: true, text: "发送中", loading: true });
       // 接口调用
       GetSms(requestData)
         .then(result => {
@@ -270,17 +274,21 @@ export default {
     // 清除倒计时
     const clearCountDown = () => {
       // 还原按钮状态
-      codeButton.status = false;
-      codeButton.text = "获取验证码";
-      codeButton.loading = false;
+      updateButtonStatus({ status: false, text: "获取验证码", loading: false });
       // 清除定时器
       clearInterval(timer.value);
+    };
+    // 更新按钮状态
+    const updateButtonStatus = params => {
+      codeButton.status = params.status;
+      codeButton.text = params.text;
+      codeButton.loading = params.loading;
     };
     // 登录 接口调用
     const login = () => {
       let requestData = {
         username: ruleForm.username,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password), // 密码加密
         code: ruleForm.verificationCode
       };
       Login(requestData)
@@ -297,7 +305,7 @@ export default {
       // 注册接口
       let requestData = {
         username: ruleForm.username,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password), // 密码加密
         code: ruleForm.verificationCode
       };
       Register(requestData)
@@ -333,7 +341,6 @@ export default {
     /**
      * 生命周期钩子函数
      */
-    // 挂载完成后
     onBeforeMount(() => {});
     onMounted(() => {});
     onBeforeUnmount(() => {});

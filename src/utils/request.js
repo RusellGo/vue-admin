@@ -15,6 +15,12 @@ const service = axios.create({
 // 请求拦截
 service.interceptors.request.use(function (config) {
   // 请求之前做些什么
+  // Token
+
+  // 最终目的就是在请求头添加参数
+  // config.headers["Token"] = "1111";
+  // config.headers["userID"] = "2222";
+
   return config;
 }, function (error) {
   // 请求错误做些什么
@@ -23,7 +29,7 @@ service.interceptors.request.use(function (config) {
 
 // 响应拦截
 service.interceptors.response.use(function (result) {
-  // 对向应数据做些什么
+  // 对响应数据做些什么
   if (result.data.resCode !== 0) {
     Message.error(result.data.message);
     return Promise.reject(result.data);
