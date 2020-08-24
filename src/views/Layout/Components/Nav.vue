@@ -1,10 +1,64 @@
 <template>
-  <div id="nav-wrap">菜单</div>
+  <div id="nav-wrap">
+    <el-menu
+      default-active="1-4-1"
+      class="el-menu-vertical-demo"
+      :collapse="isCollapse"
+      @open="handleOpen"
+      @close="handleClose"
+      background-color="transparent"
+      text-color="#fff"
+      active-text-color="#fff"
+      router
+    >
+      <template v-for="(item, index) in routers">
+        <el-submenu :key="item.id" :index="index" v-if="!item.hidden">
+          <!-- 一级菜单 -->
+          <template slot="title" :index="item.path">
+            <i class="el-icon-location"></i>
+            <span slot="title">{{ item.meta.name}}</span>
+          </template>
+          <!-- 二级菜单 -->
+          <el-menu-item
+            v-for="subItem in item.children"
+            :key="subItem.id"
+            :index="subItem.path"
+          >{{ subItem.meta.name }}</el-menu-item>
+        </el-submenu>
+      </template>
+    </el-menu>
+  </div>
 </template>
 
 <script>
+import { ref, reactive } from "@vue/composition-api";
 export default {
-  name: "Nav"
+  name: "Nav",
+  setup(props, context) {
+    /**
+     * 数据
+     */
+    const isCollapse = ref(false);
+    console.log(context.root.$router.options.routes);
+    const routers = reactive(context.root.$router.options.routes);
+
+    /**
+     * 方法
+     */
+    const handleOpen = (key, keyPath) => {
+      console.log(key, keyPath);
+    };
+    const handleClose = (key, keyPath) => {
+      console.log(key, keyPath);
+    };
+
+    return {
+      isCollapse,
+      routers,
+      handleOpen,
+      handleClose
+    };
+  }
 };
 </script>
 
@@ -17,5 +71,8 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: #344a5f;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  border: none;
 }
 </style>

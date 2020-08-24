@@ -298,7 +298,7 @@ export default {
             type: "success"
           });
 
-          context.root.$router.push({ name: "Layout" });
+          context.root.$router.push({ name: "Console" });
         })
         .catch(error => {});
     };
