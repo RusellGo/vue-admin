@@ -12,10 +12,10 @@
       router
     >
       <template v-for="(item, index) in routers">
-        <el-submenu :key="item.id" :index="index" v-if="!item.hidden">
+        <el-submenu :key="item.id" :index="index + ''" v-if="!item.hidden">
           <!-- 一级菜单 -->
           <template slot="title" :index="item.path">
-            <i class="el-icon-location"></i>
+            <svg-icon :iconClass="item.meta.icon" :className="item.meta.icon" />
             <span slot="title">{{ item.meta.name}}</span>
           </template>
           <!-- 二级菜单 -->
@@ -39,7 +39,6 @@ export default {
      * 数据
      */
     const isCollapse = ref(false);
-    console.log(context.root.$router.options.routes);
     const routers = reactive(context.root.$router.options.routes);
 
     /**
@@ -71,6 +70,10 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: #344a5f;
+  svg {
+    font-size: 20px;
+    margin-right: 10px;
+  }
 }
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   border: none;

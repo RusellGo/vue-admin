@@ -3,6 +3,9 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+// 路由懒加载
+const Layout = () => import("../views/Layout/Layout.vue");
+
 const routes = [
   {
     path: "/",
@@ -28,9 +31,10 @@ const routes = [
     path: "/console",
     name: "Console",
     redirect: "/index",
-    component: () => import("../views/Layout/Layout.vue"),
+    component: Layout,
     meta: {
-      name: "控制台"
+      name: "控制台",
+      icon: "console"
     },
     children: [
       {
@@ -49,9 +53,10 @@ const routes = [
   {
     path: "/info",
     name: "Info",
-    component: () => import("../views/Layout/Layout.vue"),
+    component: Layout,
     meta: {
-      name: "信息管理"
+      name: "信息管理",
+      icon: "info"
     },
     children: [
       {
@@ -78,9 +83,10 @@ const routes = [
   {
     path: "/user",
     name: "User",
-    component: () => import("../views/Layout/Layout.vue"),
+    component: Layout,
     meta: {
-      name: "用户管理"
+      name: "用户管理",
+      icon: "user"
     },
     children: [
       {
