@@ -19,9 +19,6 @@ export default {
     }
   },
   setup(props, context) {
-    console.log(props.iconClass);
-    console.log(props.className);
-
     // 计算属性：得出最终结果，并返回
     const iconName = computed(() => `#icon-${props.iconClass}`);
     const svgClass = computed(() => {

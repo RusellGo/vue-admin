@@ -1,5 +1,8 @@
 <template>
   <div id="nav-wrap">
+    <h1 class="logo">
+      <img src="~@/assets/logo.png" alt="logo" />
+    </h1>
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
@@ -63,6 +66,13 @@ export default {
 
 <style scoped lang="scss">
 @import "~@/styles/config.scss";
+.logo {
+  text-align: center;
+  img {
+    margin: auto;
+    width: 92px;
+  }
+}
 #nav-wrap {
   position: fixed;
   top: 0;
