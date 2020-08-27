@@ -1,6 +1,6 @@
 <template>
   <div id="header-wrap">
-    <div class="header-icon pull-left">
+    <div class="header-icon pull-left" @click="navMenuState">
       <svg-icon iconClass="menu" class-name="menu" />
     </div>
     <div class="pull-right">
@@ -16,7 +16,17 @@
 
 <script>
 export default {
-  name: "Header"
+  name: "Header",
+  setup(props, context) {
+    // 使用Vuex 状态管理
+    const navMenuState = () => {
+      context.root.$store.commit("SET_COLLAPSE");
+    };
+
+    return {
+      navMenuState
+    };
+  }
 };
 </script>
 
@@ -30,8 +40,18 @@ export default {
   height: 75px;
   line-height: 75px;
   background-color: #fff;
-  box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);
-  -webkit-box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);
+  @include webkit(box-shadow, 0 3px 16px 0 rgba(0, 0, 0, 0.1));
+  @include webkit(transition, all 0.3s ease 0s);
+}
+.open {
+  #header-wrap {
+    left: $navMenu;
+  }
+}
+.close {
+  #header-wrap {
+    left: $navMenuMin;
+  }
 }
 svg {
   margin-bottom: -8px;

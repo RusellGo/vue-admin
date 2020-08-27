@@ -35,9 +35,19 @@ export default {
   padding-top: $layoutHeader + 30;
   padding-left: $navMenu + 30;
   padding-right: 30px;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
   background-color: #f7f7f7;
+  @include webkit(box-sizing, border-box);
+  @include webkit(transition, all 0.3s ease 0s);
+}
+.open {
+  .main-content {
+    padding-left: $navMenu + 30;
+  }
+}
+.close {
+  .main-content {
+    padding-left: $navMenuMin + 30;
+  }
 }
 .content {
   width: 100%;

@@ -7,8 +7,6 @@
       default-active="1-4-1"
       class="el-menu-vertical-demo"
       :collapse="isCollapse"
-      @open="handleOpen"
-      @close="handleClose"
       background-color="transparent"
       text-color="#fff"
       active-text-color="#fff"
@@ -34,31 +32,25 @@
 </template>
 
 <script>
-import { ref, reactive } from "@vue/composition-api";
+import { ref, reactive, computed } from "@vue/composition-api";
 export default {
   name: "Nav",
   setup(props, context) {
     /**
      * 数据
      */
-    const isCollapse = ref(false);
+    // const isCollapse = ref(false);
+    // 计算属性监听Vuex状态
+    const isCollapse = computed(() => context.root.$store.state.isCollapse);
     const routers = reactive(context.root.$router.options.routes);
 
     /**
      * 方法
      */
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
 
     return {
       isCollapse,
-      routers,
-      handleOpen,
-      handleClose
+      routers
     };
   }
 };
@@ -66,13 +58,6 @@ export default {
 
 <style scoped lang="scss">
 @import "~@/styles/config.scss";
-.logo {
-  text-align: center;
-  img {
-    margin: auto;
-    width: 92px;
-  }
-}
 #nav-wrap {
   position: fixed;
   top: 0;
@@ -80,12 +65,40 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: #344a5f;
+  @include webkit(transition, all 0.3s ease 0s);
   svg {
     font-size: 20px;
     margin-right: 10px;
   }
 }
-.el-menu-vertical-demo:not(.el-menu--collapse) {
+.logo {
+  text-align: center;
+  img {
+    margin: auto;
+    width: 92px;
+  }
+}
+.el-menu-vertical-demo {
   border: none;
+}
+.open {
+  #nav-wrap {
+    width: $navMenu;
+    .logo {
+      img {
+        width: 92px;
+      }
+    }
+  }
+}
+.close {
+  #nav-wrap {
+    width: $navMenuMin;
+    .logo {
+      img {
+        width: 64px;
+      }
+    }
+  }
 }
 </style>
