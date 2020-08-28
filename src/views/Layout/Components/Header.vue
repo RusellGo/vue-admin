@@ -5,7 +5,8 @@
     </div>
     <div class="pull-right">
       <div class="user-info pull-left">
-        <img class="pull-left" src="~@/assets/logo.png" alt />管理员
+        <img class="pull-left" src="~@/assets/logo.png" alt />
+        {{ username }}
       </div>
       <div class="header-icon pull-left">
         <svg-icon iconClass="exit" class-name="exit" />
@@ -15,16 +16,19 @@
 </template>
 
 <script>
+import { computed } from "@vue/composition-api";
 export default {
   name: "Header",
   setup(props, context) {
-    // 使用Vuex 状态管理
     const navMenuState = () => {
-      context.root.$store.commit("SET_COLLAPSE");
+      // 使用Vuex 状态管理 提交mutation
+      context.root.$store.commit("app/SET_COLLAPSE");
     };
+    const username = computed(() => context.root.$store.state.app.username);
 
     return {
-      navMenuState
+      navMenuState,
+      username
     };
   }
 };
@@ -66,8 +70,10 @@ svg {
   padding: 0 32px;
   border-right: 1px solid #ededed;
   img {
-    width: 60px;
-    margin: auto 0;
+    width: 40px;
+    height: 40px;
+    margin: 18px 10px;
+    @include webkit(border-radius, 50%);
   }
   + .header-icon {
     padding: 0 28px;

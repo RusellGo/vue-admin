@@ -70,7 +70,7 @@ module.exports = {
     hotOnly: false,
     proxy: {// 设置代理
       "/devApi": {
-        target: "http://www.web-jshtml.cn/productapi",
+        target: "http://www.web-jshtml.cn/productapi/token",
         changeOrigin: true,
         pathRewrite: {
           "^/devApi": ""

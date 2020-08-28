@@ -19,7 +19,8 @@ export default {
     LayoutNav
   },
   setup(props, context) {
-    const menuStatus = computed(() => context.root.$store.state.isCollapse);
+    // 计算属性监听Vuex状态
+    const menuStatus = computed(() => context.root.$store.state.app.isCollapse);
 
     return {
       menuStatus

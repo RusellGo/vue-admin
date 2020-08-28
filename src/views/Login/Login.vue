@@ -291,7 +291,9 @@ export default {
         password: sha1(ruleForm.password), // 密码加密
         code: ruleForm.verificationCode
       };
-      Login(requestData)
+      // 使用Vuex 调用登录接口
+      context.root.$store
+        .dispatch("app/login", requestData)
         .then(result => {
           context.root.$message({
             message: result.data.message,

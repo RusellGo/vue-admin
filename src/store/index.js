@@ -1,18 +1,14 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
 Vue.use(Vuex);
 
+import app from "./modules/app.js";
+import login from "./modules/login.js";
+
 export default new Vuex.Store({
-  state: {
-    isCollapse: false
-  },
+  state: {},
   getters: {},
-  mutations: {
-    SET_COLLAPSE(state) {
-      state.isCollapse = !state.isCollapse;
-    }
-  },
+  mutations: {},
   actions: {},
-  modules: {}
+  modules: { app, login }
 });
