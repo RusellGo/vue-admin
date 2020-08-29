@@ -8,7 +8,7 @@
         <img class="pull-left" src="~@/assets/logo.png" alt />
         {{ username }}
       </div>
-      <div class="header-icon pull-left">
+      <div class="header-icon pull-left" @click="exit">
         <svg-icon iconClass="exit" class-name="exit" />
       </div>
     </div>
@@ -20,15 +20,24 @@ import { computed } from "@vue/composition-api";
 export default {
   name: "Header",
   setup(props, context) {
+    const username = computed(() => context.root.$store.state.app.username);
+
+    // 菜单栏收起/展开
     const navMenuState = () => {
       // 使用Vuex 状态管理 提交mutation
       context.root.$store.commit("app/SET_COLLAPSE");
     };
-    const username = computed(() => context.root.$store.state.app.username);
+    // 退出功能
+    const exit = () => {
+      context.root.$store.dispatch("app/exit").then(() => {
+        context.root.$router.push({ name: "Login" });
+      });
+    };
 
     return {
+      username,
       navMenuState,
-      username
+      exit
     };
   }
 };
@@ -72,7 +81,8 @@ svg {
   img {
     width: 40px;
     height: 40px;
-    margin: 18px 10px;
+    margin: 18px 20px;
+    background-color: #808080;
     @include webkit(border-radius, 50%);
   }
   + .header-icon {
