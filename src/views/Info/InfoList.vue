@@ -59,6 +59,7 @@
       </el-col>
     </el-row>
     <div class="block-space-30"></div>
+
     <!-- 表格 -->
     <el-table :data="tableData" border style="width: 100%">
       <el-table-column type="selection" width="40"></el-table-column>
@@ -74,6 +75,7 @@
       </el-table-column>
     </el-table>
     <div class="block-space-30"></div>
+
     <!-- 底部分页 -->
     <el-row>
       <el-col :span="8">
