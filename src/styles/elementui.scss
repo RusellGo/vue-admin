@@ -1,4 +1,4 @@
-// 修改elementui样式
+// 修改Nav样式
 .el-submenu .el-menu-item {
   &.is-active { 
     background-color: rgba(245, 108, 108, 0.2) !important;
@@ -12,7 +12,7 @@
     background-color: $mainColor !important;
   }
 }
-
+//修改Nav收起样式
 .close {
   .el-submenu {
     &.is-opened {
@@ -28,5 +28,18 @@
   }
   .el-menu-item:hover {
     background-color: $mainColor !important;
+  }
+}
+// table样式
+div.el-table {
+  td, th {
+    text-align: center;
+  }
+  th {
+    font-weight: bold;
+    color: #344a5f;
+  }
+  td {
+    font-size: 14px;
   }
 }
