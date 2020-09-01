@@ -2,9 +2,9 @@ import { Login } from "@/api/login.js";
 import { setToken, setUsername, removeToken, getUsername, getToken, removeUsername } from "@/utils/app.js";
 
 const state = {
-  isCollapse: JSON.parse(sessionStorage.getItem("isCollapse")) || false,
-  token: getToken() || "",
-  username: getUsername() || ""
+  isCollapse: false || JSON.parse(sessionStorage.getItem("isCollapse")),
+  token: "" || getToken(),
+  username: "" || getUsername(),
 }
 const getters = {
   isCollapse: state => state.isCollapse

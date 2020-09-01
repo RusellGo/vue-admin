@@ -7,7 +7,7 @@ const whiteRouter = ["/login"];
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  // 这里直接使用getToken()方法获取token会存在一些问题：当认为输入token值时，通过url也能跳转
+  // 这里直接使用getToken()方法获取token会存在一些问题：当人为输入token值时，通过url也能跳转
   // if (getToken()) {
   if (store.state.app.token) {
     if (to.path === "/login") {

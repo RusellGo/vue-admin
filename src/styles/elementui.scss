@@ -43,3 +43,20 @@ div.el-table {
     font-size: 14px;
   }
 }
+// dialog弹框样式
+.el-dialog__body {
+  padding: 30px 47px !important;
+}
+.el-dialog__footer {
+  text-align: center !important;
+  padding-bottom: 50px !important;
+  .el-button {
+    width: 150px;
+    margin: 0 11px !important;
+  }
+}
+.el-form {
+  .el-form-item:last-child {
+    margin: 0 !important;
+  }
+}

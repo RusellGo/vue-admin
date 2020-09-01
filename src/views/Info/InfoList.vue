@@ -6,7 +6,7 @@
         <div class="label-wrap category">
           <label for>类型：</label>
           <div class="content-wrap">
-            <el-select v-model="value" placeholder="请选择" style="width: 100%;">
+            <el-select v-model="category_value" placeholder="请选择" style="width: 100%;">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -22,7 +22,7 @@
           <label for>日期：</label>
           <div class="content-wrap">
             <el-date-picker
-              v-model="value2"
+              v-model="date_value"
               type="datetimerange"
               align="right"
               start-placeholder="开始日期"
@@ -39,7 +39,7 @@
           <div class="content-wrap">
             <el-select v-model="search_keyword" style="width: 100%;">
               <el-option
-                v-for="item in searchOptions"
+                v-for="item in search_options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -55,13 +55,18 @@
         <el-button type="danger" style="width: 100%;">搜索</el-button>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" class="pull-right" style="width: 100%;">新增</el-button>
+        <el-button
+          type="danger"
+          class="pull-right"
+          style="width: 100%;"
+          @click="dialog_info = true"
+        >新增</el-button>
       </el-col>
     </el-row>
     <div class="block-space-30"></div>
 
     <!-- 表格 -->
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="table_data" border style="width: 100%">
       <el-table-column type="selection" width="40"></el-table-column>
       <el-table-column prop="title" label="标题" width="600"></el-table-column>
       <el-table-column prop="category" label="类型" width="96"></el-table-column>
@@ -94,14 +99,22 @@
         ></el-pagination>
       </el-col>
     </el-row>
+
+    <!-- 新增弹窗 -->
+    <dialog-info :flag.sync="dialog_info"></dialog-info>
   </div>
 </template>
 
 <script>
+import DialogInfo from "./dialog/info.vue";
 import { ref, reactive } from "@vue/composition-api";
 export default {
   name: "InfoList",
+  components: {
+    DialogInfo
+  },
   setup(props, context) {
+    // 数据
     // 类型
     const options = reactive([
       {
@@ -117,11 +130,11 @@ export default {
         label: "行业信息"
       }
     ]);
-    const value = ref("");
+    const category_value = ref("");
     // 日期
-    const value2 = ref("");
+    const date_value = ref("");
     // 关键字
-    const searchOptions = reactive([
+    const search_options = reactive([
       {
         value: "id",
         label: "ID"
@@ -133,9 +146,11 @@ export default {
     ]);
     const search_keyword = ref("id");
     const search_keyWork = ref("");
+    // 信息弹窗
+    const dialog_info = ref(false);
 
     // 表格数据
-    const tableData = reactive([
+    const table_data = reactive([
       {
         title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
         category: "国内信息",
@@ -143,22 +158,22 @@ export default {
         user: "超级管理员"
       },
       {
-        title: "月球可能是一件武器",
+        title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
         category: "国内信息",
         date: "2019-12-13 21:35:12",
-        user: "管理员"
+        user: "超级管理员"
       },
       {
-        title: "海奥华预言",
+        title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
         category: "国内信息",
         date: "2019-12-13 21:35:12",
-        user: "管理员"
+        user: "超级管理员"
       },
       {
-        title: "秦始皇陵、乾陵、金字塔",
+        title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
         category: "国内信息",
         date: "2019-12-13 21:35:12",
-        user: "管理员"
+        user: "超级管理员"
       }
     ]);
 
@@ -172,13 +187,16 @@ export default {
     };
 
     return {
+      // 数据
       options,
-      value,
-      value2,
-      searchOptions,
+      category_value,
+      date_value,
+      search_options,
       search_keyword,
       search_keyWork,
-      tableData,
+      table_data,
+      dialog_info,
+      // 方法
       handleSizeChange,
       handleCurrentChange
     };
