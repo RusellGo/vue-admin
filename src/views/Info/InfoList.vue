@@ -74,8 +74,8 @@
       <el-table-column prop="user" label="管理人" width="100"></el-table-column>
       <el-table-column label="操作">
         <template>
-          <el-button size="mini" type="danger">删除</el-button>
-          <el-button size="mini" type="success">编辑</el-button>
+          <el-button size="mini" type="danger" @click="deleteItem">删除</el-button>
+          <el-button size="mini" type="success" @click="dialog_info = true">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -84,7 +84,7 @@
     <!-- 底部分页 -->
     <el-row>
       <el-col :span="8">
-        <el-button size="small">批量删除</el-button>
+        <el-button size="small" @click="deleteAll">批量删除</el-button>
       </el-col>
       <el-col :span="16">
         <el-pagination
@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import { global } from "@/utils/global_Vue3.0.js";
 import DialogInfo from "./dialog/info.vue";
 import { ref, reactive } from "@vue/composition-api";
 export default {
@@ -185,6 +186,39 @@ export default {
     const handleCurrentChange = val => {
       console.log(val);
     };
+    // 调用自定义的全局方法
+    const { confirm } = global(); // 3.0的全局方法写法
+    const deleteItem = () => {
+      confirm({
+        content: "此操作将永久删除当前信息，是否继续？！",
+        tip: "警告",
+        fn: confirmDelete,
+        id: "1"
+      });
+      // context.root.confirm({
+      //   content: "此操作将永久删除当前信息，是否继续？！",
+      //   tip: "警告",
+      //   fn: confirmDelete,
+      //   id: "1"
+      // });
+    };
+    const deleteAll = () => {
+      confirm({
+        content: "此操作将永久删除选择的信息，是否继续？！",
+        tip: "警告",
+        fn: confirmDelete,
+        id: "2"
+      });
+      // context.root.confirm({
+      //   content: "此操作将永久删除选择的信息，是否继续？！",
+      //   tip: "危险",
+      //   fn: confirmDelete,
+      //   id: "2"
+      // });
+    };
+    const confirmDelete = value => {
+      console.log(value);
+    };
 
     return {
       // 数据
@@ -198,7 +232,9 @@ export default {
       dialog_info,
       // 方法
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      deleteItem,
+      deleteAll
     };
   }
 };
