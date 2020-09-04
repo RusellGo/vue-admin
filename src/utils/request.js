@@ -1,6 +1,7 @@
 import axios from "axios";
 // 导入element-ui的消息提示对象
 import { Message } from "element-ui";
+import { getToken, getUsername } from "@/utils/app.js";
 
 // 创建axios
 // Vue3.0后台管理系统API地址：http://www.web-jshtml.cn/productApi
@@ -18,8 +19,8 @@ service.interceptors.request.use(function (config) {
   // Token
 
   // 最终目的就是在请求头添加参数
-  // config.headers["Token"] = "1111";
-  // config.headers["userID"] = "2222";
+  config.headers["Tokey"] = getToken();
+  config.headers["UserName"] = getUsername();
 
   return config;
 }, function (error) {
