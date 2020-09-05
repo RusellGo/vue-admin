@@ -31,3 +31,23 @@ export function GetCategory(data) {
     data
   })
 }
+/**
+ * 删除分类
+ */
+export function DeleteCategory(data) {
+  return service.request({
+    method: "post",
+    url: "/news/deleteCategory/",
+    data
+  });
+}
+/**
+ * 修改分类
+ */
+export function EditCategory(data) {
+  return service.request({
+    method: "post",
+    url: "/news/editCategory/",
+    data
+  });
+}
