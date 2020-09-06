@@ -2,9 +2,23 @@ import service from "@/utils/request.js";
 /**
  * 列表
  */
+export function GetList(data) {
+  return service.request({
+    method: "post",
+    url: "/news/getList/",
+    data
+  })
+}
 /**
  * 新增
  */
+export function AddInfo(data) {
+  return service.request({
+    method: "post",
+    url: "/news/add/",
+    data
+  });
+}
 /**
  * 编辑
  */

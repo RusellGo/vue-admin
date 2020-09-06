@@ -4,14 +4,14 @@
     <el-row :gutter="6">
       <el-col :span="4">
         <div class="label-wrap category">
-          <label for>类型：</label>
+          <label for>分类：</label>
           <div class="content-wrap">
             <el-select v-model="category_value" placeholder="请选择" style="width: 100%;">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="item in options.category"
+                :key="item.id"
+                :label="item.category_name"
+                :value="item.id"
               ></el-option>
             </el-select>
           </div>
@@ -66,11 +66,11 @@
     <div class="block-space-30"></div>
 
     <!-- 表格 -->
-    <el-table :data="table_data" border style="width: 100%">
+    <el-table :data="table_data.item" border style="width: 100%">
       <el-table-column type="selection" width="40"></el-table-column>
       <el-table-column prop="title" label="标题" width="600"></el-table-column>
-      <el-table-column prop="category" label="类型" width="96"></el-table-column>
-      <el-table-column prop="date" label="日期" width="174"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="96"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="174"></el-table-column>
       <el-table-column prop="user" label="管理人" width="100"></el-table-column>
       <el-table-column label="操作">
         <template>
@@ -95,42 +95,34 @@
           :page-sizes="[10, 20, 30, 50, 100]"
           :page-size="10"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="1000"
+          :total="total"
         ></el-pagination>
       </el-col>
     </el-row>
 
     <!-- 新增弹窗 -->
-    <dialog-info :flag.sync="dialog_info"></dialog-info>
+    <dialog-info :flag.sync="dialog_info" :category="options.category"></dialog-info>
   </div>
 </template>
 
 <script>
+import { GetList } from "@/api/news.js";
 import { global } from "@/utils/global_Vue3.0.js";
 import DialogInfo from "./dialog/info.vue";
-import { ref, reactive } from "@vue/composition-api";
+import { ref, reactive, onMounted, watchEffect } from "@vue/composition-api";
 export default {
   name: "InfoList",
   components: {
     DialogInfo
   },
   setup(props, context) {
-    // 数据
+    /**
+     * 数据
+     */
     // 类型
-    const options = reactive([
-      {
-        value: 1,
-        label: "国际信息"
-      },
-      {
-        value: 2,
-        label: "国内信息"
-      },
-      {
-        value: 3,
-        label: "行业信息"
-      }
-    ]);
+    const options = reactive({
+      category: []
+    });
     const category_value = ref("");
     // 日期
     const date_value = ref("");
@@ -149,45 +141,61 @@ export default {
     const search_keyWork = ref("");
     // 信息弹窗
     const dialog_info = ref(false);
-
     // 表格数据
-    const table_data = reactive([
-      {
-        title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
-        category: "国内信息",
-        date: "2019-12-13 21:35:12",
-        user: "超级管理员"
-      },
-      {
-        title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
-        category: "国内信息",
-        date: "2019-12-13 21:35:12",
-        user: "超级管理员"
-      },
-      {
-        title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
-        category: "国内信息",
-        date: "2019-12-13 21:35:12",
-        user: "超级管理员"
-      },
-      {
-        title: "罗斯威尔事件、道西基地事件、51区、UFO机库",
-        category: "国内信息",
-        date: "2019-12-13 21:35:12",
-        user: "超级管理员"
-      }
-    ]);
+    const table_data = reactive({
+      item: []
+    });
+    // 总条数
+    const total = ref(0);
+    // 页码
+    const page = reactive({
+      pageNumber: 1,
+      pageSize: 10
+    });
 
+    /**
+     * 方法
+     */
     // 获得 每页显示多少条数据
-    const handleSizeChange = val => {
-      console.log(val);
+    const handleSizeChange = value => {
+      console.log(value);
+      page.pageSize = value;
+      getList();
     };
     // 获得 页码
-    const handleCurrentChange = val => {
-      console.log(val);
+    const handleCurrentChange = value => {
+      console.log(value);
+      page.pageNumber = value;
+      getList();
     };
-    // 调用自定义的全局方法
+    // 获取列表信息
+    const getList = () => {
+      let requestData = {
+        categoryId: "",
+        startTiem: "",
+        endTime: "",
+        title: "",
+        id: "",
+        pageNumber: page.pageNumber,
+        pageSize: page.pageSize
+      };
+      GetList(requestData)
+        .then(result => {
+          console.log(result);
+          let data = result.data.data;
+          // 更新数据
+          table_data.item = data.data;
+          // 页面统计数据
+          total.value = data.total;
+        })
+        .catch(error => {});
+    };
+
+    /**
+     * 调用自定义的全局方法
+     */
     const { confirm } = global(); // 3.0的全局方法写法
+    // 删除单项
     const deleteItem = () => {
       confirm({
         content: "此操作将永久删除当前信息，是否继续？！",
@@ -195,13 +203,8 @@ export default {
         fn: confirmDelete,
         id: "1"
       });
-      // context.root.confirm({
-      //   content: "此操作将永久删除当前信息，是否继续？！",
-      //   tip: "警告",
-      //   fn: confirmDelete,
-      //   id: "1"
-      // });
     };
+    // 批量删除
     const deleteAll = () => {
       confirm({
         content: "此操作将永久删除选择的信息，是否继续？！",
@@ -209,16 +212,29 @@ export default {
         fn: confirmDelete,
         id: "2"
       });
-      // context.root.confirm({
-      //   content: "此操作将永久删除选择的信息，是否继续？！",
-      //   tip: "危险",
-      //   fn: confirmDelete,
-      //   id: "2"
-      // });
     };
     const confirmDelete = value => {
       console.log(value);
     };
+    // Vuex 获取信息分类
+    const getInfoCategory = () => {
+      context.root.$store
+        .dispatch("common/getInfoCategory", {})
+        .then(result => {
+          options.category = result;
+        })
+        .catch(error => {});
+    };
+
+    /**
+     * 生命周期
+     */
+    onMounted(() => {
+      // Vuex 获取分类
+      getInfoCategory();
+      // 信息列表
+      getList();
+    });
 
     return {
       // 数据
@@ -228,8 +244,9 @@ export default {
       search_options,
       search_keyword,
       search_keyWork,
-      table_data,
       dialog_info,
+      table_data,
+      total,
       // 方法
       handleSizeChange,
       handleCurrentChange,

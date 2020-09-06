@@ -71,8 +71,10 @@ import {
   DeleteCategory,
   EditCategory
 } from "@/api/news.js";
-import { ref, reactive, onMounted } from "@vue/composition-api";
+import { ref, reactive, onMounted, watchEffect } from "@vue/composition-api";
 import { global } from "@/utils/global_Vue3.0.js";
+// Vue3.0
+import { common } from "@/api/common.js";
 export default {
   name: "InfoCategory",
   setup(props, context) {
@@ -164,15 +166,8 @@ export default {
       submit_button_disabled.value = false;
     };
     // 获取信息分类 方法
-    const getCategory = () => {
-      // 调用接口
-      GetCategory({})
-        .then(result => {
-          let data = result.data.data.data;
-          category.item = data;
-        })
-        .catch(error => {});
-    };
+    // Vue3.0
+    const { getInfoCategory, categoryItem } = common();
     // 删除分类
     const { confirm } = global(); // 3.0的全局方法写法
     const deleteCategoryConfirm = categoryID => {
@@ -250,7 +245,12 @@ export default {
     // 3.0生命周期钩子 页面元素挂载完成后执行
     onMounted(() => {
       // 调用 获取信息分类方法
-      getCategory();
+      // getCategory();
+      getInfoCategory();
+    });
+
+    watchEffect(() => {
+      category.item = categoryItem.item;
     });
 
     return {
