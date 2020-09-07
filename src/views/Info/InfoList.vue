@@ -6,7 +6,7 @@
         <div class="label-wrap category">
           <label for>分类：</label>
           <div class="content-wrap">
-            <el-select v-model="category_value" placeholder="请选择" style="width: 100%;">
+            <el-select v-model="category_value" clearable placeholder="请选择" style="width: 100%;">
               <el-option
                 v-for="item in options.category"
                 :key="item.id"
@@ -27,6 +27,8 @@
               align="right"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd HH:mm:ss"
               :default-time="['12:00:00', '08:00:00']"
               style="width: 100%;"
             ></el-date-picker>
@@ -37,7 +39,7 @@
         <div class="label-wrap key-word">
           <label for>关键字：</label>
           <div class="content-wrap">
-            <el-select v-model="search_keyword" style="width: 100%;">
+            <el-select v-model="search_key" style="width: 100%;">
               <el-option
                 v-for="item in search_options"
                 :key="item.value"
@@ -49,10 +51,10 @@
         </div>
       </el-col>
       <el-col :span="3">
-        <el-input v-model="search_keyWork" placeholder="请输入内容" style="width: 100%;"></el-input>
+        <el-input v-model="search_keyWord" clearable placeholder="请输入内容" style="width: 100%;"></el-input>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" style="width: 100%;">搜索</el-button>
+        <el-button type="danger" style="width: 100%;" @click="getList">搜索</el-button>
       </el-col>
       <el-col :span="2">
         <el-button
@@ -66,15 +68,21 @@
     <div class="block-space-30"></div>
 
     <!-- 表格 -->
-    <el-table :data="table_data.item" border style="width: 100%">
+    <el-table
+      :data="table_data.item"
+      v-loading="loadingData"
+      border
+      style="width: 100%"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="40"></el-table-column>
       <el-table-column prop="title" label="标题" width="600"></el-table-column>
-      <el-table-column prop="categoryId" label="类型" width="96"></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="174"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="90" :formatter="toCategory"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="160" :formatter="toDate"></el-table-column>
       <el-table-column prop="user" label="管理人" width="100"></el-table-column>
       <el-table-column label="操作">
-        <template>
-          <el-button size="mini" type="danger" @click="deleteItem">删除</el-button>
+        <template slot-scope="scope">
+          <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)">删除</el-button>
           <el-button size="mini" type="success" @click="dialog_info = true">编辑</el-button>
         </template>
       </el-table-column>
@@ -92,8 +100,8 @@
           background
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :page-sizes="[10, 20, 30, 50, 100]"
-          :page-size="10"
+          :page-sizes="[7, 20, 30, 50, 100]"
+          :page-size="page.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         ></el-pagination>
@@ -106,10 +114,11 @@
 </template>
 
 <script>
-import { GetList } from "@/api/news.js";
+import { GetList, DeleteInfo } from "@/api/news.js";
 import { global } from "@/utils/global_Vue3.0.js";
 import DialogInfo from "./dialog/info.vue";
 import { ref, reactive, onMounted, watchEffect } from "@vue/composition-api";
+import { timestampToTime } from "@/utils/common.js";
 export default {
   name: "InfoList",
   components: {
@@ -119,10 +128,11 @@ export default {
     /**
      * 数据
      */
-    // 类型
+    // 将类型传递给Dialog子组件
     const options = reactive({
       category: []
     });
+    // 分类
     const category_value = ref("");
     // 日期
     const date_value = ref("");
@@ -137,20 +147,22 @@ export default {
         label: "标题"
       }
     ]);
-    const search_keyword = ref("id");
-    const search_keyWork = ref("");
+    const search_key = ref("id");
+    const search_keyWord = ref("");
     // 信息弹窗
     const dialog_info = ref(false);
     // 表格数据
+    const loadingData = ref(false);
     const table_data = reactive({
       item: []
     });
+    const deleteInfoId = ref("");
     // 总条数
     const total = ref(0);
     // 页码
     const page = reactive({
       pageNumber: 1,
-      pageSize: 10
+      pageSize: 7
     });
 
     /**
@@ -168,53 +180,88 @@ export default {
       page.pageNumber = value;
       getList();
     };
-    // 获取列表信息
-    const getList = () => {
+
+    // 搜索条件处理
+    const formatData = () => {
       let requestData = {
-        categoryId: "",
-        startTiem: "",
-        endTime: "",
-        title: "",
-        id: "",
         pageNumber: page.pageNumber,
         pageSize: page.pageSize
       };
+      // 分类ID
+      if (category_value.value) {
+        requestData.categoryId = category_value.value;
+      }
+      // 日期
+      if (date_value.value.length > 0) {
+        requestData.startTiem = date_value.value[0];
+        requestData.endTime = date_value.value[1];
+      }
+      // 关键字
+      if (search_keyWord.value) {
+        requestData[search_key.value] = search_keyWord.value;
+      }
+
+      return requestData;
+    };
+
+    // 获取列表信息
+    const getList = () => {
+      // 单独处理数据
+      let requestData = formatData();
+      // 加载状态
+      loadingData.value = true;
       GetList(requestData)
         .then(result => {
-          console.log(result);
           let data = result.data.data;
           // 更新数据
           table_data.item = data.data;
-          // 页面统计数据
+          // 数据条数 统计数据
           total.value = data.total;
+          // 表格动画
+          loadingData.value = false;
         })
-        .catch(error => {});
+        .catch(error => {
+          // 表格动画
+          loadingData.value = false;
+        });
     };
-
     /**
      * 调用自定义的全局方法
      */
     const { confirm } = global(); // 3.0的全局方法写法
     // 删除单项
-    const deleteItem = () => {
+    const deleteItem = id => {
+      deleteInfoId.value = [id];
       confirm({
-        content: "此操作将永久删除当前信息，是否继续？！",
+        content: "此操作将永久删除该信息，是否继续？！",
         tip: "警告",
-        fn: confirmDelete,
-        id: "1"
+        fn: confirmDelete
       });
     };
     // 批量删除
     const deleteAll = () => {
+      if (!deleteInfoId.value || deleteInfoId.value.length == 0) {
+        context.root.$message({
+          message: "请选择要删除的数据！",
+          type: "error"
+        });
+        return false;
+      }
       confirm({
         content: "此操作将永久删除选择的信息，是否继续？！",
         tip: "警告",
-        fn: confirmDelete,
-        id: "2"
+        fn: confirmDelete
       });
     };
     const confirmDelete = value => {
-      console.log(value);
+      DeleteInfo({ id: deleteInfoId.value })
+        .then(result => {
+          // 删除成功清空数据
+          deleteInfoId.value = "";
+          // 删除成功重新获取数据
+          getList();
+        })
+        .catch(error => {});
     };
     // Vuex 获取信息分类
     const getInfoCategory = () => {
@@ -224,6 +271,23 @@ export default {
           options.category = result;
         })
         .catch(error => {});
+    };
+    // 格式化表格 日期
+    const toDate = (row, column, cellValue, index) => {
+      return timestampToTime(row.createDate);
+    };
+    // 格式化表格 类型
+    const toCategory = row => {
+      let categoryId = row.categoryId;
+      let categoryData = options.category.filter(
+        item => item.id == categoryId
+      )[0];
+      return categoryData.category_name;
+    };
+    // 获得多选的数据
+    const handleSelectionChange = value => {
+      let id = value.map(item => item.id);
+      deleteInfoId.value = id;
     };
 
     /**
@@ -242,16 +306,22 @@ export default {
       category_value,
       date_value,
       search_options,
-      search_keyword,
-      search_keyWork,
+      search_key,
+      search_keyWord,
       dialog_info,
+      loadingData,
       table_data,
       total,
+      page,
       // 方法
       handleSizeChange,
       handleCurrentChange,
+      getList,
       deleteItem,
-      deleteAll
+      deleteAll,
+      toDate,
+      toCategory,
+      handleSelectionChange
     };
   }
 };

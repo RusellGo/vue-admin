@@ -116,25 +116,16 @@ export default {
         });
         return false;
       }
-      // 参数有BUG================================================参数有BUG
       let requestData = {
-        category: data.form.category,
+        categoryId: data.form.category,
         title: data.form.title,
         content: data.form.content
-
-        // categoryId: 111,
-        // title: "这里是标题信息",
-        // imgUrl: "http://********",
-        // createDate: "2020-02-02 12:00:00",
-        // content: "这里是内容"
       };
       data.submitLoading = true;
       AddInfo(requestData)
         .then(result => {
-          console.log(result.data);
-          let data = result.data;
           context.root.$message({
-            message: data.message,
+            message: result.data.message,
             type: "success"
           });
           data.submitLoading = false;

@@ -25,6 +25,13 @@ export function AddInfo(data) {
 /**
  * 删除
  */
+export function DeleteInfo(data) {
+  return service.request({
+    method: "post",
+    url: "/news/deleteInfo/",
+    data
+  })
+}
 /**
  * 一级分类添加
  */
