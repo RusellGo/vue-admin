@@ -83,7 +83,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)">删除</el-button>
-          <el-button size="mini" type="success" @click="dialog_info = true">编辑</el-button>
+          <el-button size="mini" type="success" @click="editInfo(scope.row.id)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -109,7 +109,14 @@
     </el-row>
 
     <!-- 新增弹窗 -->
-    <dialog-info :flag.sync="dialog_info" :category="options.category"></dialog-info>
+    <dialog-info :flag.sync="dialog_info" :category="options.category" @get-list="getList"></dialog-info>
+    <!-- 编辑弹窗 -->
+    <dialog-info-edit
+      :flag.sync="dialog_info_edit"
+      :category="options.category"
+      :id="infoId"
+      @getList="getList"
+    ></dialog-info-edit>
   </div>
 </template>
 
@@ -117,12 +124,14 @@
 import { GetList, DeleteInfo } from "@/api/news.js";
 import { global } from "@/utils/global_Vue3.0.js";
 import DialogInfo from "./dialog/info.vue";
+import DialogInfoEdit from "./dialog/edit.vue";
 import { ref, reactive, onMounted, watchEffect } from "@vue/composition-api";
 import { timestampToTime } from "@/utils/common.js";
 export default {
   name: "InfoList",
   components: {
-    DialogInfo
+    DialogInfo,
+    DialogInfoEdit
   },
   setup(props, context) {
     /**
@@ -132,6 +141,8 @@ export default {
     const options = reactive({
       category: []
     });
+    // 将编辑id传递给子组件
+    const infoId = ref("");
     // 分类
     const category_value = ref("");
     // 日期
@@ -151,6 +162,7 @@ export default {
     const search_keyWord = ref("");
     // 信息弹窗
     const dialog_info = ref(false);
+    const dialog_info_edit = ref(false);
     // 表格数据
     const loadingData = ref(false);
     const table_data = reactive({
@@ -224,6 +236,11 @@ export default {
           // 表格动画
           loadingData.value = false;
         });
+    };
+    // 点击编辑
+    const editInfo = id => {
+      infoId.value = id;
+      dialog_info_edit.value = true;
     };
     /**
      * 调用自定义的全局方法
@@ -303,12 +320,14 @@ export default {
     return {
       // 数据
       options,
+      infoId,
       category_value,
       date_value,
       search_options,
       search_key,
       search_keyWord,
       dialog_info,
+      dialog_info_edit,
       loadingData,
       table_data,
       total,
@@ -317,6 +336,7 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       getList,
+      editInfo,
       deleteItem,
       deleteAll,
       toDate,

@@ -1,14 +1,14 @@
 <template>
   <!-- 新增弹窗 -->
   <el-dialog
-    title="新增"
+    title="修改"
     :visible.sync="data.dialog_info_flag"
     @close="close"
     width="580px"
     @opened="openDialog"
   >
     <el-form :model="data.form" ref="addInfo">
-      <el-form-item label="类型：" :label-width="data.formLabelWidth" prop="category">
+      <el-form-item label="类型：" :label-width="data.formLabelWidth">
         <el-select v-model="data.form.category" placeholder="请选择活动区域">
           <el-option
             v-for="item in data.categoryOptions"
@@ -18,10 +18,10 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="标题：" :label-width="data.formLabelWidth" prop="title">
+      <el-form-item label="标题：" :label-width="data.formLabelWidth">
         <el-input v-model="data.form.title" placeholder="请输入标题" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="概况：" :label-width="data.formLabelWidth" prop="content">
+      <el-form-item label="概况：" :label-width="data.formLabelWidth">
         <el-input
           type="textarea"
           v-model="data.form.content"
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { AddInfo } from "@/api/news.js";
+import { EditInfo, GetList } from "@/api/news.js";
 import { ref, reactive, watchEffect } from "@vue/composition-api";
 export default {
   name: "DialogInfo",
@@ -50,6 +50,10 @@ export default {
     category: {
       type: Array,
       default: () => {}
+    },
+    id: {
+      type: String,
+      default: ""
     }
   },
   setup(props, context) {
@@ -76,9 +80,27 @@ export default {
     /**
      * 方法
      */
-    // 点击新增按钮
+    // 点击编辑按钮
     const openDialog = () => {
       data.categoryOptions = props.category;
+      getInfo();
+    };
+    const getInfo = () => {
+      let requestData = {
+        pageNumber: 1,
+        pageSize: 1,
+        id: props.id
+      };
+      GetList(requestData)
+        .then(result => {
+          let resultData = result.data.data.data[0];
+          data.form = {
+            category: resultData.categoryId,
+            title: resultData.title,
+            content: resultData.content
+          };
+        })
+        .catch(error => {});
     };
     // 关闭弹框
     const close = () => {
@@ -89,12 +111,11 @@ export default {
     };
     // 重置表单
     const resetForm = () => {
-      context.refs.addInfo.resetFields();
-      // data.form.category = "";
-      // data.form.title = "";
-      // data.form.content = "";
+      data.form.category = "";
+      data.form.title = "";
+      data.form.content = "";
     };
-    // 确定新增
+    // 确定编辑
     const submit = () => {
       if (data.form.category == "") {
         context.root.$message({
@@ -118,22 +139,23 @@ export default {
         return false;
       }
       let requestData = {
+        id: props.id,
         categoryId: data.form.category,
         title: data.form.title,
         content: data.form.content
       };
       data.submitLoading = true;
-      AddInfo(requestData)
+      EditInfo(requestData)
         .then(result => {
           context.root.$message({
             message: result.data.message,
             type: "success"
           });
           data.submitLoading = false;
-          // 添加成功刷新
-          context.emit("get-list");
+          // 修改完成刷新数据
+          context.emit("getList");
           // 重置表单
-          resetForm();
+          // resetForm();
         })
         .catch(error => {
           data.submitLoading = false;
