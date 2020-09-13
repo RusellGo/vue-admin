@@ -1,0 +1,62 @@
+// 修改Nav样式
+.el-submenu .el-menu-item {
+  &.is-active { 
+    background-color: rgba(245, 108, 108, 0.2) !important;
+  }
+  font-size: 13px;
+  padding: 0 45px 0 49px !important;
+}
+// 修改一级菜单的样式
+.el-submenu {
+  &.is-active.is-opened .el-submenu__title {
+    background-color: $mainColor !important;
+  }
+}
+//修改Nav收起样式
+.close {
+  .el-submenu {
+    &.is-opened {
+      >.el-submenu__title {
+        background-color: $mainColor !important;
+      }
+    }
+  }
+}
+.el-menu--vertical {
+  .el-menu {
+    background-color: $mainColor !important;
+  }
+  .el-menu-item:hover {
+    background-color: $mainColor !important;
+  }
+}
+// table样式
+div.el-table {
+  td, th {
+    text-align: center;
+  }
+  th {
+    font-weight: bold;
+    color: #344a5f;
+  }
+  td {
+    font-size: 14px;
+  }
+}
+// dialog弹框样式
+.el-dialog__body {
+  padding: 30px 47px !important;
+}
+.el-dialog__footer {
+  text-align: center !important;
+  padding-bottom: 50px !important;
+  .el-button {
+    width: 150px;
+    margin: 0 11px !important;
+  }
+}
+.el-form {
+  .el-form-item:last-child {
+    margin: 0 !important;
+  }
+}
