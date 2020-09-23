@@ -84,12 +84,7 @@
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)">删除</el-button>
           <el-button size="mini" type="success" @click="editInfo(scope.row.id)">编辑</el-button>
-          <router-link
-            :to="{ name: 'InfoDetailed', query: {id: scope.row.id}}"
-            class="margin-left-10"
-          >
-            <el-button size="mini" type="success">编辑详情</el-button>
-          </router-link>
+          <el-button size="mini" type="success" @click="infoDetailed(scope.row)">编辑详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -248,6 +243,32 @@ export default {
       infoId.value = id;
       dialog_info_edit.value = true;
     };
+    // 编辑详情
+    const infoDetailed = data => {
+      // 在这里提交 解决刷新重新赋值的问题
+      // context.root.$store.commit("infoDetailed/SET_ID", data.id);
+      // context.root.$store.commit("infoDetailed/SET_TITLE", data.title);
+      context.root.$store.commit("infoDetailed/UPDATE_STATE_VALUE", {
+        id: {
+          value: data.id,
+          sessionKey: "infoId",
+          session: true
+        },
+        title: {
+          value: data.title,
+          sessionKey: "infoTitle",
+          session: true
+        }
+      });
+      // 跳转页面
+      context.root.$router.push({
+        name: "InfoDetailed",
+        params: {
+          id: data.id,
+          title: data.title
+        }
+      });
+    };
     /**
      * 调用自定义的全局方法
      */
@@ -302,10 +323,8 @@ export default {
     // 格式化表格 类型
     const toCategory = row => {
       let categoryId = row.categoryId;
-      let categoryData = options.category.filter(
-        item => item.id == categoryId
-      )[0];
-      return categoryData.category_name;
+      let categoryData = options.category.filter(item => item.id == categoryId);
+      return categoryData[0].category_name;
     };
     // 获得多选的数据
     const handleSelectionChange = value => {
@@ -343,6 +362,7 @@ export default {
       handleCurrentChange,
       getList,
       editInfo,
+      infoDetailed,
       deleteItem,
       deleteAll,
       toDate,
