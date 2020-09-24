@@ -15,7 +15,9 @@
       <el-input v-model="form.title"></el-input>
     </el-form-item>
 
-    <el-form-item label="缩略图：" prop="thumbnail">缩略图</el-form-item>
+    <el-form-item label="缩略图：" prop="thumbnail">
+      <UploadImg :imgUrl.sync="form.imgUrl" :config="uploadImgConfig" />
+    </el-form-item>
 
     <el-form-item label="发布日期：" prop="publishedTime">
       <el-date-picker v-model="form.createDate" type="date" placeholder="选择日期" disabled></el-date-picker>
@@ -35,6 +37,8 @@
 import { GetList, EditInfo } from "@/api/news.js";
 import { ref, reactive, onMounted } from "@vue/composition-api";
 import { timestampToTime } from "@/utils/common.js";
+// 导入缩略图组件
+import UploadImg from "components/UploadImg";
 // 富文本编辑器
 import { quillEditor } from "vue-quill-editor";
 import "quill/dist/quill.core.css";
@@ -44,18 +48,10 @@ import "quill/dist/quill.bubble.css";
 export default {
   name: "InfoDetailed",
   components: {
-    quillEditor: quillEditor
+    quillEditor: quillEditor,
+    UploadImg: UploadImg
   },
   setup(props, context) {
-    // let id =
-    //   context.root.$route.params.id ||
-    //   context.root.$store.getters["infoDetailed/infoId"];
-    // let title =
-    //   context.root.$route.params.title ||
-    //   context.root.$store.getters["infoDetailed/infoTitle"];
-    // console.log(id);
-    // console.log(title);
-
     // 信息分类数据
     const data = reactive({
       id:
@@ -69,7 +65,15 @@ export default {
       categoryId: "",
       title: "",
       createDate: "",
-      content: ""
+      content: "",
+      imgUrl: ""
+    });
+    // 图片上传配置
+    const uploadImgConfig = reactive({
+      uploadUrl: "http://up-z2.qiniup.com",
+      ak: "",
+      sk: "",
+      buckety: ""
     });
 
     /**
@@ -100,6 +104,7 @@ export default {
           form.title = resultData.title;
           form.createDate = timestampToTime(resultData.createDate);
           form.content = resultData.content;
+          form.imgUrl = requestData.imgUrl;
         })
         .catch(error => {});
     };
@@ -126,7 +131,8 @@ export default {
         id: data.id,
         categoryId: form.categoryId,
         title: form.title,
-        content: form.content
+        content: form.content,
+        imgUrl: form.imgUrl
       };
       data.submitLoading = true;
       EditInfo(requestData)
@@ -153,11 +159,35 @@ export default {
     return {
       data,
       form,
+      uploadImgConfig,
       submit
     };
   }
 };
 </script>
 
-<style scoped lang="scss">
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>
