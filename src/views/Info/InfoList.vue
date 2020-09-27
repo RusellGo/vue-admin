@@ -6,7 +6,12 @@
         <div class="label-wrap category">
           <label for>分类：</label>
           <div class="content-wrap">
-            <el-select v-model="category_value" clearable placeholder="请选择" style="width: 100%;">
+            <el-select
+              v-model="category_value"
+              clearable
+              placeholder="请选择"
+              style="width: 100%;"
+            >
               <el-option
                 v-for="item in options.category"
                 :key="item.id"
@@ -39,22 +44,30 @@
         <div class="label-wrap key-word">
           <label for>关键字：</label>
           <div class="content-wrap">
-            <el-select v-model="search_key" style="width: 100%;">
+            <select-vue :config="data.configOption" />
+            <!-- <el-select v-model="search_key" style="width: 100%;">
               <el-option
                 v-for="item in search_options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
               ></el-option>
-            </el-select>
+            </el-select> -->
           </div>
         </div>
       </el-col>
       <el-col :span="3">
-        <el-input v-model="search_keyWord" clearable placeholder="请输入内容" style="width: 100%;"></el-input>
+        <el-input
+          v-model="search_keyWord"
+          clearable
+          placeholder="请输入内容"
+          style="width: 100%;"
+        ></el-input>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" style="width: 100%;" @click="getList">搜索</el-button>
+        <el-button type="danger" style="width: 100%;" @click="getList"
+          >搜索</el-button
+        >
       </el-col>
       <el-col :span="2">
         <el-button
@@ -62,7 +75,8 @@
           class="pull-right"
           style="width: 100%;"
           @click="dialog_info = true"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
     </el-row>
     <div class="block-space-30"></div>
@@ -77,14 +91,30 @@
     >
       <el-table-column type="selection" width="40"></el-table-column>
       <el-table-column prop="title" label="标题" width="524"></el-table-column>
-      <el-table-column prop="categoryId" label="类型" width="90" :formatter="toCategory"></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="160" :formatter="toDate"></el-table-column>
+      <el-table-column
+        prop="categoryId"
+        label="类型"
+        width="90"
+        :formatter="toCategory"
+      ></el-table-column>
+      <el-table-column
+        prop="createDate"
+        label="日期"
+        width="160"
+        :formatter="toDate"
+      ></el-table-column>
       <el-table-column prop="user" label="管理人" width="100"></el-table-column>
       <el-table-column label="操作" width="252">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)">删除</el-button>
-          <el-button size="mini" type="success" @click="editInfo(scope.row.id)">编辑</el-button>
-          <el-button size="mini" type="success" @click="infoDetailed(scope.row)">编辑详情</el-button>
+          <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)"
+            >删除</el-button
+          >
+          <el-button size="mini" type="success" @click="editInfo(scope.row.id)"
+            >编辑</el-button
+          >
+          <el-button size="mini" type="success" @click="infoDetailed(scope.row)"
+            >编辑详情</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -110,7 +140,11 @@
     </el-row>
 
     <!-- 新增弹窗 -->
-    <dialog-info :flag.sync="dialog_info" :category="options.category" @get-list="getList"></dialog-info>
+    <dialog-info
+      :flag.sync="dialog_info"
+      :category="options.category"
+      @get-list="getList"
+    ></dialog-info>
     <!-- 编辑弹窗 -->
     <dialog-info-edit
       :flag.sync="dialog_info_edit"
@@ -126,13 +160,15 @@ import { GetList, DeleteInfo } from "@/api/news.js";
 import { global } from "@/utils/global_Vue3.0.js";
 import DialogInfo from "./dialog/info.vue";
 import DialogInfoEdit from "./dialog/edit.vue";
+import SelectVue from "@/components/Select";
 import { ref, reactive, onMounted, watchEffect } from "@vue/composition-api";
 import { timestampToTime } from "@/utils/common.js";
 export default {
   name: "InfoList",
   components: {
     DialogInfo,
-    DialogInfoEdit
+    DialogInfoEdit,
+    SelectVue
   },
   setup(props, context) {
     /**
@@ -149,16 +185,19 @@ export default {
     // 日期
     const date_value = ref("");
     // 关键字
-    const search_options = reactive([
-      {
-        value: "id",
-        label: "ID"
-      },
-      {
-        value: "title",
-        label: "标题"
-      }
-    ]);
+    const data = reactive({
+      configOption: ["id", "title"]
+    });
+    // const search_options = reactive([
+    //   {
+    //     value: "id",
+    //     label: "ID"
+    //   },
+    //   {
+    //     value: "title",
+    //     label: "标题"
+    //   }
+    // ]);
     const search_key = ref("id");
     const search_keyWord = ref("");
     // 信息弹窗
@@ -348,7 +387,8 @@ export default {
       infoId,
       category_value,
       date_value,
-      search_options,
+      data,
+      // search_options,
       search_key,
       search_keyWord,
       dialog_info,
