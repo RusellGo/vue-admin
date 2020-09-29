@@ -44,7 +44,7 @@
         <div class="label-wrap key-word">
           <label for>关键字：</label>
           <div class="content-wrap">
-            <select-vue :config="data.configOption" />
+            <select-vue :config="data.configOption" @getOption="getOption" />
             <!-- <el-select v-model="search_key" style="width: 100%;">
               <el-option
                 v-for="item in search_options"
@@ -186,7 +186,9 @@ export default {
     const date_value = ref("");
     // 关键字
     const data = reactive({
-      configOption: ["id", "title"]
+      configOption: {
+        init: ["id", "title"]
+      }
     });
     // const search_options = reactive([
     //   {

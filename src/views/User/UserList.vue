@@ -39,7 +39,9 @@ export default {
   },
   setup(props, context) {
     const data = reactive({
-      configOption: ["name", "phone", "email"],
+      configOption: {
+        init: ["name", "phone", "email"]
+      },
       inputValue: ""
     });
 
