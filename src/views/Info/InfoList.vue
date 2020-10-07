@@ -44,7 +44,7 @@
         <div class="label-wrap key-word">
           <label for>关键字：</label>
           <div class="content-wrap">
-            <select-vue :config="data.configOption" @getOption="getOption" />
+            <select-vue :config="data.configOption" />
             <!-- <el-select v-model="search_key" style="width: 100%;">
               <el-option
                 v-for="item in search_options"
