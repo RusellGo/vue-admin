@@ -117,7 +117,9 @@ export default {
             pageNumber: 1,
             pageSize: 7
           }
-        }
+        },
+        paginationShow: true,
+        paginationLayout: "total, sizes, prev, pager, next, jumper"
       }
     });
 

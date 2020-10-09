@@ -44,15 +44,15 @@
         <div class="label-wrap key-word">
           <label for>关键字：</label>
           <div class="content-wrap">
-            <select-vue :config="data.configOption" />
-            <!-- <el-select v-model="search_key" style="width: 100%;">
+            <!-- <select-vue :config="data.configOption" /> -->
+            <el-select v-model="search_key" style="width: 100%;">
               <el-option
                 v-for="item in search_options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
               ></el-option>
-            </el-select> -->
+            </el-select>
           </div>
         </div>
       </el-col>
@@ -185,21 +185,21 @@ export default {
     // 日期
     const date_value = ref("");
     // 关键字
-    const data = reactive({
-      configOption: {
-        init: ["id", "title"]
-      }
-    });
-    // const search_options = reactive([
-    //   {
-    //     value: "id",
-    //     label: "ID"
-    //   },
-    //   {
-    //     value: "title",
-    //     label: "标题"
+    // const data = reactive({
+    //   configOption: {
+    //     init: ["id", "title"]
     //   }
-    // ]);
+    // });
+    const search_options = reactive([
+      {
+        value: "id",
+        label: "ID"
+      },
+      {
+        value: "title",
+        label: "标题"
+      }
+    ]);
     const search_key = ref("id");
     const search_keyWord = ref("");
     // 信息弹窗
@@ -389,8 +389,8 @@ export default {
       infoId,
       category_value,
       date_value,
-      data,
-      // search_options,
+      // data,
+      search_options,
       search_key,
       search_keyWord,
       dialog_info,
