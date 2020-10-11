@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 搜索操作 -->
     <el-row>
       <el-col :span="20">
         <div class="label-wrap">
@@ -23,10 +24,17 @@
         </div>
       </el-col>
       <el-col :span="4">
-        <el-button type="danger" class="pull-right">添加用户</el-button>
+        <el-button
+          type="danger"
+          class="pull-right"
+          @click="data.dialog_add = true"
+        >
+          添加用户
+        </el-button>
       </el-col>
     </el-row>
     <div class="block-space-30"></div>
+
     <!-- TableVue组件 -->
     <table-vue :config="data.configTable">
       <template v-slot:status="slotData">
@@ -46,6 +54,9 @@
         </el-button>
       </template>
     </table-vue>
+
+    <!-- 添加用户弹窗组件 -->
+    <dialog-add-user :flag.sync="data.dialog_add" />
   </div>
 </template>
 
@@ -53,11 +64,13 @@
 import { reactive } from "@vue/composition-api";
 import SelectVue from "@/components/Select";
 import TableVue from "@/components/Table";
+import DialogAddUser from "./dialog/addUser.vue";
 export default {
   name: "UserList",
   components: {
     SelectVue,
-    TableVue
+    TableVue,
+    DialogAddUser
   },
   setup(props, context) {
     const data = reactive({
@@ -120,7 +133,9 @@ export default {
         },
         paginationShow: true,
         paginationLayout: "total, sizes, prev, pager, next, jumper"
-      }
+      },
+      // 信息弹窗
+      dialog_add: false
     });
 
     /**

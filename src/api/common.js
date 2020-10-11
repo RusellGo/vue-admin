@@ -57,3 +57,14 @@ export function LoadTableData(params) {
     data: params.data || {}
   });
 }
+
+/**
+ * 省市县地区数据请求
+ */
+export function GetCityPicker(data) {
+  return service.request({
+    method: "post",
+    url: "/cityPicker/",
+    data
+  })
+}
