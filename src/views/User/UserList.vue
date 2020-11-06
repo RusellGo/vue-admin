@@ -36,22 +36,32 @@
     <div class="block-space-30"></div>
 
     <!-- TableVue组件 -->
-    <table-vue :config="data.configTable">
+    <table-vue
+      ref="userTable"
+      :config="data.configTable"
+      :tableRow.sync="data.tableRow"
+    >
       <template v-slot:status="slotData">
         <el-switch
-          v-model="slotData.data.name"
+          v-model="slotData.data.status"
+          active-value="2"
+          inactive-value="1"
           active-color="#13ce66"
           inactive-color="#ff4949"
         >
         </el-switch>
+        {{ slotData.data.status }}
       </template>
       <template v-slot:operation="slotData">
-        <el-button type="danger" size="small" @click="test(slotData.data)">
+        <el-button type="danger" size="small" @click="deleteOne(slotData.data)">
           删除
         </el-button>
-        <el-button type="success" size="small" @click="test(slotData.data)">
+        <el-button type="success" size="small">
           编辑
         </el-button>
+      </template>
+      <template v-slot:batchRemoveTables>
+        <el-button size="small" @click="batchDelete">批量删除</el-button>
       </template>
     </table-vue>
 
@@ -61,10 +71,17 @@
 </template>
 
 <script>
-import { reactive } from "@vue/composition-api";
+import { ref, reactive } from "@vue/composition-api";
+// 接口
+import { UserDelete } from "@/api/user.js";
+// 组件
 import SelectVue from "@/components/Select";
 import TableVue from "@/components/Table";
 import DialogAddUser from "./dialog/addUser.vue";
+// 自定义的全局方法
+import { global } from "@/utils/global_Vue3.0.js";
+// 中央事件总线
+import EventBus from "@/utils/bus.js";
 export default {
   name: "UserList",
   components: {
@@ -73,11 +90,15 @@ export default {
     DialogAddUser
   },
   setup(props, context) {
+    // 组件传参 事件总线
+    // EventBus.$emit("test", 111);
+
     const data = reactive({
       // Select 组件配置参数
       configOption: {
         init: ["name", "phone", "email"]
       },
+      // 输入的关键字
       inputValue: "",
       // Table 组件配置参数
       configTable: {
@@ -89,22 +110,22 @@ export default {
         tHead: [
           {
             label: "邮箱/用户名",
-            field: "email",
-            width: 120
+            field: "username"
+            // width: 120
           },
           {
             label: "真实姓名",
-            field: "name",
-            width: 100
+            field: "truename"
+            // width: 100
           },
           {
             label: "手机号",
-            field: "phone",
-            width: 130
+            field: "phone"
+            // width: 130
           },
           {
             label: "地区",
-            field: "address"
+            field: "region"
           },
           {
             label: "角色",
@@ -135,19 +156,61 @@ export default {
         paginationLayout: "total, sizes, prev, pager, next, jumper"
       },
       // 信息弹窗
-      dialog_add: false
+      dialog_add: false,
+      // tabale选择的数据
+      tableRow: {}
     });
 
     /**
      * 方法
      */
-    const test = params => {
-      console.log(params);
+    // 批量删除
+    const { confirm } = global(); // 自定义的全局方法 删除二次警告
+    const batchDelete = () => {
+      let id = data.tableRow.rowId;
+      if (!id || id.length === 0) {
+        context.root.$message({
+          message: "请勾选要删除的数据",
+          type: "warning"
+        });
+        return false;
+      }
+      confirm({
+        content: "此操作将永久删除选择的信息，是否继续？！",
+        tip: "警告",
+        fn: confirmDelete
+      });
+    };
+    // 删除接口联调
+    // 定义一个和tableVue组件ref名相同的变量并导出
+    const userTable = ref(null);
+    const confirmDelete = () => {
+      UserDelete({ id: data.tableRow.rowId })
+        .then(response => {
+          // 父组件调用组件方法 刷新表格
+          // 其中一种写法
+          // context.refs.userTable.refreshData();
+          // 第二种写法 使用定义的变量
+          userTable.value.refreshData();
+        })
+        .catch(error => {});
+    };
+
+    // 单项删除
+    const deleteOne = params => {
+      data.tableRow.rowId = [params.id];
+      confirm({
+        content: "此操作将永久删除选择的信息，是否继续？！",
+        tip: "警告",
+        fn: confirmDelete
+      });
     };
 
     return {
       data,
-      test
+      userTable,
+      batchDelete,
+      deleteOne
     };
   }
 };

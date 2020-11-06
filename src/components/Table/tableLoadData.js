@@ -20,10 +20,9 @@ export function loadData() {
     LoadTableData(formatData)
       .then(result => {
         let responseData = result.data.data.data;
-        if (responseData && responseData.length > 0) {
-          tableData.item = responseData;
-          tableData.total = result.data.data.total;
-        }
+        // 制定好接口规范，若后台无数据，返回一个空数组
+        tableData.item = responseData;
+        tableData.total = responseData.length === 0 ? 0 : result.data.data.total;
       })
       .catch(error => { });
   }

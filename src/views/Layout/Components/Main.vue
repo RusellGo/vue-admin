@@ -58,5 +58,6 @@ export default {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   background-color: #fff;
+  overflow: auto;
 }
 </style>

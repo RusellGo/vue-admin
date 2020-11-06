@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-table :data="data.tableData" border style="width: 100%">
+    <el-table
+      :data="data.tableData"
+      border
+      style="width: 100%"
+      @selection-change="tableSelectHandle"
+    >
       <!-- 多选框 -->
       <el-table-column
         v-if="data.tableConfig.selection"
@@ -33,20 +38,30 @@
         ></el-table-column>
       </template>
     </el-table>
-
-    <!-- 页码 -->
-    <el-pagination
-      v-if="data.tableConfig.paginationShow"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="pageData.currentPage"
-      :page-sizes="pageData.pageSizes"
-      :page-size="pageData.pageSize"
-      :layout="data.tableConfig.paginationLayout"
-      :total="pageData.total"
-      background
-    >
-    </el-pagination>
+    <!-- <div class="block-space-30"></div> -->
+    <div class="table-footer">
+      <el-row>
+        <el-col :span="4">
+          <slot name="batchRemoveTables"></slot>
+        </el-col>
+        <el-col :span="20">
+          <!-- 页码 -->
+          <el-pagination
+            class="pull-right"
+            v-if="data.tableConfig.paginationShow"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageData.currentPage"
+            :page-sizes="pageData.pageSizes"
+            :page-size="pageData.pageSize"
+            :layout="data.tableConfig.paginationLayout"
+            :total="pageData.total"
+            background
+          >
+          </el-pagination>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
@@ -62,6 +77,10 @@ export default {
   name: "TableVue",
   props: {
     config: {
+      type: Object,
+      default: () => {}
+    },
+    tableRow: {
       type: Object,
       default: () => {}
     }
@@ -135,6 +154,23 @@ export default {
     };
 
     /**
+     * 勾选checkbox时触发
+     */
+    const tableSelectHandle = val => {
+      let rowData = {
+        rowId: val.map(item => item.id)
+      };
+      context.emit("update:tableRow", rowData);
+    };
+
+    /**
+     * 刷新数据
+     */
+    const refreshData = () => {
+      tableLoadData(data.tableConfig.requestData);
+    };
+
+    /**
      * 生命周期钩子
      */
     onBeforeMount(() => {
@@ -146,11 +182,16 @@ export default {
       data,
       pageData,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      tableSelectHandle,
+      refreshData
     };
   }
 };
 </script>
 
 <style scoped>
+.table-footer {
+  padding: 15px 0;
+}
 </style>
