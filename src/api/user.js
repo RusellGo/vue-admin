@@ -32,3 +32,27 @@ export function UserDelete(data) {
     data
   })
 }
+
+/**
+ * 用户禁启用
+ * @param {} data 
+ */
+export function UserActives(data) {
+  return service.request({
+    method: "post",
+    url: "/user/actives/",
+    data
+  })
+}
+
+/**
+ * 用户编辑
+ * @param {*} data 
+ */
+export function UserEdit(data) {
+  return service.request({
+    method: "post",
+    url: "/user/edit/",
+    data
+  })
+}

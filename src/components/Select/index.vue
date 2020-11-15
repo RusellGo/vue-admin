@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-select v-model="data.selectValue">
+    <el-select v-model="data.selectValue" @change="selectOne">
       <el-option
         v-for="item in data.initOptions"
         :key="item.value"
@@ -16,7 +16,8 @@ import { onMounted, reactive } from "@vue/composition-api";
 export default {
   name: "SelectVue",
   props: {
-    config: { type: Object, default: () => {} }
+    config: { type: Object, default: () => {} },
+    selectData: { type: Object, default: () => {} },
   },
   setup(props, context) {
     const data = reactive({
@@ -27,22 +28,22 @@ export default {
         { value: "phone", label: "手机号" },
         { value: "email", label: "邮箱" },
         { value: "id", label: "ID" },
-        { value: "title", label: "标题" }
-      ]
+        { value: "title", label: "标题" },
+      ],
     });
 
     /**
      * 初始化下拉选择
      */
-    let initOption = () => {
+    const initOption = () => {
       let initData = props.config.init;
       let optionArr = [];
       if (initData.length === 0) {
         console.warn("使用SelectVue组件需要传递参数");
         return false;
       }
-      initData.forEach(item => {
-        let arr = data.options.filter(ele => ele.value == item);
+      initData.forEach((item) => {
+        let arr = data.options.filter((ele) => ele.value == item);
         if (arr.length > 0) {
           optionArr.push(arr[0]);
         }
@@ -58,16 +59,27 @@ export default {
     };
 
     /**
+     * 选择触发
+     */
+    const selectOne = (value) => {
+      let filterData = data.options.filter((item) => item.value == value)[0];
+      context.emit("update:selectData", filterData);
+    };
+
+    /**
      * 生命周期钩子
      */
     onMounted(() => {
       initOption();
+      // 下拉框初识值传递 用于搜索功能
+      context.emit("update:selectData", data.initOptions[0]);
     });
 
     return {
-      data
+      data,
+      selectOne,
     };
-  }
+  },
 };
 </script>
 

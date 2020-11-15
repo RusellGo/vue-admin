@@ -78,12 +78,12 @@ export default {
   props: {
     config: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     tableRow: {
       type: Object,
-      default: () => {}
-    }
+      default: () => {},
+    },
   },
   setup(props, context) {
     // 组件变量
@@ -94,9 +94,9 @@ export default {
         requestData: {},
         tHead: [],
         paginationShow: true,
-        paginationLayout: "total, sizes, prev, pager, next, jumper"
+        paginationLayout: "total, sizes, prev, pager, next, jumper",
       },
-      tableData: []
+      tableData: [],
     });
 
     /**
@@ -111,7 +111,7 @@ export default {
       pageData,
       totalCount,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
     } = paginationHook();
 
     /**
@@ -156,9 +156,9 @@ export default {
     /**
      * 勾选checkbox时触发
      */
-    const tableSelectHandle = val => {
+    const tableSelectHandle = (val) => {
       let rowData = {
-        rowId: val.map(item => item.id)
+        rowId: val.map((item) => item.id),
       };
       context.emit("update:tableRow", rowData);
     };
@@ -167,6 +167,18 @@ export default {
      * 刷新数据
      */
     const refreshData = () => {
+      tableLoadData(data.tableConfig.requestData);
+    };
+
+    /**
+     * 带参数的刷新数据
+     */
+    const paramsRefreshData = (params) => {
+      let requestData = Object.assign({}, params, {
+        pageNumber: 1,
+        pageSize: 7,
+      });
+      data.tableConfig.requestData.data = requestData;
       tableLoadData(data.tableConfig.requestData);
     };
 
@@ -184,9 +196,10 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       tableSelectHandle,
-      refreshData
+      refreshData,
+      paramsRefreshData,
     };
-  }
+  },
 };
 </script>
 
