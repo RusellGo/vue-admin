@@ -4,7 +4,7 @@ import { setToken, setUsername, removeToken, getUsername, getToken, removeUserna
 const state = {
   isCollapse: false || JSON.parse(sessionStorage.getItem("isCollapse")),
   token: "" || getToken(),
-  username: "" || getUsername(),
+  username: "" || getUsername()
 }
 const getters = {
   isCollapse: state => state.isCollapse

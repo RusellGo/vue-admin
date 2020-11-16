@@ -12,6 +12,18 @@ export function GetRole(data) {
 }
 
 /**
+ * 获取系统
+ * @param {*} data 
+ */
+export function GetSystem(data) {
+  return service.request({
+    method: "post",
+    url: "/system/",
+    data
+  })
+}
+
+/**
  * 用户添加
  */
 export function UserAdd(data) {

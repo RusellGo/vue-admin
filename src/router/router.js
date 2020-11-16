@@ -3,10 +3,23 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+/**
+ *
+ * 1.系统分配
+ * 2.角色分配
+ */
+/**
+ * 1.默认路由
+ * 2.动态路由
+ */
+
 // 路由懒加载
 const Layout = () => import("../views/Layout/Layout.vue");
 
-const routes = [
+/**
+ * 默认路由
+ */
+const defaultRouterMap = [
   {
     path: "/",
     redirect: "/login",
@@ -46,7 +59,13 @@ const routes = [
         }
       }
     ]
-  },
+  }
+];
+
+/**
+ * 动态路由
+ */
+const asyncRouterMap = [
   /**
    * 信息管理
    */
@@ -108,7 +127,9 @@ const routes = [
       }
     ]
   }
-];
+]
+
+const routes = defaultRouterMap;
 
 const router = new VueRouter({
   routes

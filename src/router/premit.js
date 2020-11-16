@@ -19,11 +19,24 @@ router.beforeEach((to, from, next) => {
     } else {
       // 获取用户角色
       // 动态分布路由权限
-      next();
+      /**
+       * 1.什么时候处理动态路由
+       * 2.以什么条件处理
+       */
+      // 用户登录时 判断用户的权限
+      if (store.getters["permission/roles"].length === 0) {
+        // 如果状态 没有权限 就获取一次用户的权限 并取得权限值
+        store.dispatch("permission/getRoles").then(response => {
+          console.log(response);
+        }).catch(error => { })
+      } else {
+        next();
+      }
+      // next();
     }
   } else {
     if (whiteRouter.indexOf(to.path) !== -1) {
-      next();
+      next(); // to
     } else {
       next("/login");
     }

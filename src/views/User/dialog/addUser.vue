@@ -83,7 +83,7 @@
       </el-form-item>
 
       <el-form-item
-        label="角色类型："
+        label="系统："
         :label-width="data.formLabelWidth"
         prop="role"
       >
@@ -109,7 +109,7 @@
 
 <script>
 import sha1 from "js-sha1";
-import { GetRole, UserAdd, UserEdit } from "@/api/user.js";
+import { GetSystem, UserAdd, UserEdit } from "@/api/user.js";
 // 引入特殊字符处理函数 以及表单输入验证函数
 import { stripscript, validateEmail, validatePass } from "@/utils/validate.js";
 import {
@@ -273,8 +273,8 @@ export default {
     /**
      * 获取角色
      */
-    const getRole = () => {
-      GetRole({})
+    const getSystem = () => {
+      GetSystem({})
         .then((response) => {
           data.getRoleType = response.data.data;
         })
@@ -286,7 +286,7 @@ export default {
      */
     const openDialog = () => {
       // 进行一次角色请求
-      getRole();
+      getSystem();
 
       // 初识值处理
       let editData = props.editData;
@@ -301,8 +301,7 @@ export default {
       // 处理编辑时电话号码为字符串的问题
       data.form.phone = data.form.phone
         ? Number(data.form.phone)
-        : data.from.phone;
-      console.log(data.form.phone);
+        : data.form.phone;
     };
 
     watchEffect(() => {
@@ -360,6 +359,7 @@ export default {
           // 此处角色类型要从数组转换为字符串，且不能影响页面，对数据做出转换前需要进行数据的深拷贝
           // 深拷贝 使用JSON.parse(JSON.stringify(data)) 但对象中function、undefined、Symbol类型的数据将会丢失
           // 浅拷贝 Object.asign({}, data.form) 拷贝出来就是一个对象
+          console.log(data.form);
           let requestData = JSON.parse(JSON.stringify(data.form));
           requestData.role = requestData.role.join();
           requestData.region = JSON.stringify(data.cityPickerData);
