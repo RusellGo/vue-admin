@@ -7,7 +7,9 @@
           v-for="(item, index) in menuTab"
           :key="item.id"
           @click="toggleMenu(index)"
-        >{{ item.txt }}</li>
+        >
+          {{ item.txt }}
+        </li>
       </ul>
       <!-- 表单 start -->
       <el-form
@@ -20,7 +22,12 @@
       >
         <el-form-item prop="username" class="item-form">
           <label for="username">邮箱</label>
-          <el-input id="username" type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+          <el-input
+            id="username"
+            type="text"
+            v-model="ruleForm.username"
+            autocomplete="off"
+          ></el-input>
         </el-form-item>
 
         <el-form-item prop="password" class="item-form">
@@ -35,7 +42,11 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item prop="checkPassword" class="item-form" v-show="model === 'register'">
+        <el-form-item
+          prop="checkPassword"
+          class="item-form"
+          v-show="model === 'register'"
+        >
           <label for="checkPassword">确认密码</label>
           <el-input
             id="checkPassword"
@@ -67,7 +78,8 @@
                 @click="getSms"
                 :disabled="codeButton.status"
                 :loading="codeButton.loading"
-              >{{ codeButton.text }}</el-button>
+                >{{ codeButton.text }}</el-button
+              >
             </el-col>
           </el-row>
         </el-form-item>
@@ -78,7 +90,8 @@
             @click="submitForm('loginForm')"
             class="login-btn block"
             :disabled="loginButtonStatus"
-          >{{ model === "login" ? "登录" : "注册" }}</el-button>
+            >{{ model === "login" ? "登录" : "注册" }}</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -95,14 +108,14 @@ import {
   onMounted,
   onBeforeUnmount,
   onUnmounted,
-  onBeforeMount
+  onBeforeMount,
 } from "@vue/composition-api";
 // 引入特殊字符处理函数 以及表单输入验证函数
 import {
   stripscript,
   validateEmail,
   validatePass,
-  validateCode
+  validateCode,
 } from "@/utils/validate.js";
 
 export default {
@@ -178,7 +191,7 @@ export default {
     const codeButton = reactive({
       status: false,
       text: "获取验证码",
-      loading: false
+      loading: false,
     });
     // 验证码重新发送倒计时
     const timer = ref(null);
@@ -187,7 +200,7 @@ export default {
       username: "",
       password: "",
       checkPassword: "",
-      verificationCode: ""
+      verificationCode: "",
     });
     // 表单验证
     const rules = reactive({
@@ -195,15 +208,15 @@ export default {
       password: [{ validator: validatePassword, trigger: "blur" }],
       checkPassword: [{ validator: validateCheckPassword, trigger: "blur" }],
       verificationCode: [
-        { validator: validateVerificationCode, trigger: "blur" }
-      ]
+        { validator: validateVerificationCode, trigger: "blur" },
+      ],
     });
 
     /**
      * 声明方法
      */
     // 切换 登录/注册
-    const toggleMenu = index => {
+    const toggleMenu = (index) => {
       // 点击赋值 对比 显示高光
       currentIndex.value = index;
       // 修改模块值
@@ -230,24 +243,24 @@ export default {
       // 验证码请求接口 获取验证码 请求参数
       let requestData = {
         username: ruleForm.username,
-        module: model.value
+        module: model.value,
       };
       // 修改 获取验证码按钮状态
       updateButtonStatus({ status: true, text: "发送中", loading: true });
       // 接口调用
       GetSms(requestData)
-        .then(result => {
+        .then((result) => {
           // 验证码发送成功消息提示
           context.root.$message({
             message: result.data.message,
-            type: "success"
+            type: "success",
           });
           // 启用登录或注册按钮
           loginButtonStatus.value = false;
           // 按钮定时器
           countDown(60);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           // promise 返回错误
           // 登录页 获取验证码 -> 邮箱不存在 -> 还原按钮
@@ -255,7 +268,7 @@ export default {
         });
     };
     // 验证码按钮 倒计时
-    const countDown = time => {
+    const countDown = (time) => {
       clearInterval(timer.value);
       timer.value = setInterval(() => {
         time--;
@@ -279,7 +292,7 @@ export default {
       clearInterval(timer.value);
     };
     // 更新按钮状态
-    const updateButtonStatus = params => {
+    const updateButtonStatus = (params) => {
       codeButton.status = params.status;
       codeButton.text = params.text;
       codeButton.loading = params.loading;
@@ -289,20 +302,20 @@ export default {
       let requestData = {
         username: ruleForm.username,
         password: sha1(ruleForm.password), // 密码加密
-        code: ruleForm.verificationCode
+        code: ruleForm.verificationCode,
       };
       // 使用Vuex 调用登录接口
       context.root.$store
         .dispatch("app/login", requestData)
-        .then(result => {
+        .then((result) => {
           context.root.$message({
             message: result.data.message,
-            type: "success"
+            type: "success",
           });
 
-          context.root.$router.push({ name: "Console" });
+          context.root.$router.replace({ name: "Console" });
         })
-        .catch(error => {});
+        .catch((error) => {});
     };
     // 注册 接口调用
     const register = () => {
@@ -310,24 +323,24 @@ export default {
       let requestData = {
         username: ruleForm.username,
         password: sha1(ruleForm.password), // 密码加密
-        code: ruleForm.verificationCode
+        code: ruleForm.verificationCode,
       };
       Register(requestData)
-        .then(result => {
+        .then((result) => {
           context.root.$message({
             message: result.data.message,
-            type: "success"
+            type: "success",
           });
           // 注册成功后切换为登录
           toggleMenu(0);
           // 切换后按钮还原
           clearCountDown();
         })
-        .catch(error => {});
+        .catch((error) => {});
     };
     // 提交 登录/注册
-    const submitForm = formName => {
-      context.refs[formName].validate(valid => {
+    const submitForm = (formName) => {
+      context.refs[formName].validate((valid) => {
         // 表单验证通过
         if (valid) {
           if (model.value === "login") {
@@ -362,9 +375,9 @@ export default {
       //方法
       toggleMenu,
       getSms,
-      submitForm
+      submitForm,
     };
-  }
+  },
 };
 </script>
 

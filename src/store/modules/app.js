@@ -4,10 +4,12 @@ import { setToken, setUsername, removeToken, getUsername, getToken, removeUserna
 const state = {
   isCollapse: false || JSON.parse(sessionStorage.getItem("isCollapse")),
   token: "" || getToken(),
-  username: "" || getUsername()
+  username: "" || getUsername(),
+  roles: [],
 }
 const getters = {
-  isCollapse: state => state.isCollapse
+  isCollapse: state => state.isCollapse,
+  roles: state => state.roles
 }
 const mutations = {
   SET_COLLAPSE(state) {
@@ -21,6 +23,9 @@ const mutations = {
   SET_USERNAME(state, value) {
     state.username = value;
   },
+  SET_ROLES(state, playload) {
+    state.roles = playload.role;
+  }
 }
 const actions = {
   login(context, payload) {

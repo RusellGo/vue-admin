@@ -19,7 +19,8 @@ const Layout = () => import("../views/Layout/Layout.vue");
 /**
  * 默认路由
  */
-const defaultRouterMap = [
+// 要动态创建路由 将默认路由导出
+export const defaultRouterMap = [
   {
     path: "/",
     redirect: "/login",
@@ -59,13 +60,15 @@ const defaultRouterMap = [
         }
       }
     ]
-  }
+  },
 ];
 
 /**
  * 动态路由
+ * 角色：业务员，技术员，部门经理
  */
-const asyncRouterMap = [
+// 将路由导出
+export const asyncRouterMap = [
   /**
    * 信息管理
    */
@@ -74,6 +77,8 @@ const asyncRouterMap = [
     name: "Info",
     component: Layout,
     meta: {
+      role: ["业务员"],
+      system: "信息功能",
       name: "信息管理",
       icon: "info"
     },
@@ -83,6 +88,7 @@ const asyncRouterMap = [
         name: "InfoList",
         component: () => import("../views/Info/InfoList.vue"),
         meta: {
+          role: ["业务员"],
           name: "信息列表"
         }
       },
@@ -91,6 +97,7 @@ const asyncRouterMap = [
         name: "InfoCategory",
         component: () => import("../views/Info/InfoCategory.vue"),
         meta: {
+          role: ["业务员"],
           name: "信息分类"
         }
       },
@@ -100,6 +107,7 @@ const asyncRouterMap = [
         hidden: true,
         component: () => import("../views/Info/InfoDetailed.vue"),
         meta: {
+          role: ["业务员"],
           name: "信息详情"
         }
       }
@@ -113,6 +121,8 @@ const asyncRouterMap = [
     name: "User",
     component: Layout,
     meta: {
+      role: ["业务员"],
+      system: "用户功能",
       name: "用户管理",
       icon: "user"
     },
@@ -122,6 +132,7 @@ const asyncRouterMap = [
         name: "UserList",
         component: () => import("../views/User/UserList.vue"),
         meta: {
+          role: ["业务员"],
           name: "用户列表"
         }
       }

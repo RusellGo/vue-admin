@@ -24,10 +24,22 @@ router.beforeEach((to, from, next) => {
        * 2.以什么条件处理
        */
       // 用户登录时 判断用户的权限
-      if (store.getters["permission/roles"].length === 0) {
+      if (store.getters["app/roles"].length === 0) {
         // 如果状态 没有权限 就获取一次用户的权限 并取得权限值
         store.dispatch("permission/getRoles").then(response => {
-          console.log(response);
+          // 修改 角色权限状态
+          store.commit("app/SET_ROLES", response);
+          // response 获取到的用户角色
+          // dispatch 创建路由的actions
+          store.dispatch("permission/createRouter", response).then(response => {
+            let newRouters = store.getters["permission/newRouters"];
+            let allRouters = store.getters["permission/allRouters"];
+            // 更新路由参数
+            router.options.routes = allRouters;
+            // 添加动态路由
+            router.addRoutes(newRouters);
+            next({ ...to, replace: true });
+          }).catch();
         }).catch(error => { })
       } else {
         next();
