@@ -6,10 +6,12 @@ const state = {
   token: "" || getToken(),
   username: "" || getUsername(),
   roles: [],
+  buttonPermission: []
 }
 const getters = {
   isCollapse: state => state.isCollapse,
-  roles: state => state.roles
+  roles: state => state.roles,
+  buttonPermission: state => state.buttonPermission
 }
 const mutations = {
   SET_COLLAPSE(state) {
@@ -24,7 +26,10 @@ const mutations = {
     state.username = value;
   },
   SET_ROLES(state, playload) {
-    state.roles = playload.role;
+    state.roles = playload;
+  },
+  SET_BUTTON(state, playload) {
+    state.buttonPermission = playload;
   }
 }
 const actions = {

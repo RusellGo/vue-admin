@@ -59,10 +59,20 @@
         {{ slotData.data.status }}
       </template>
       <template v-slot:operation="slotData">
-        <el-button type="danger" size="small" @click="deleteOne(slotData.data)">
+        <el-button
+          type="danger"
+          size="small"
+          @click="deleteOne(slotData.data)"
+          v-if="btnPerm('info.delete')"
+        >
           删除
         </el-button>
-        <el-button type="success" size="small" @click="editOne(slotData.data)">
+        <el-button
+          type="success"
+          size="small"
+          @click="editOne(slotData.data)"
+          v-if="btnPerm('info.edit')"
+        >
           编辑
         </el-button>
       </template>

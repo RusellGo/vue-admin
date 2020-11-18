@@ -13,6 +13,11 @@ import "./router/premit.js";
 import "./icons/index.js";
 // 自定义全局方法
 // import global from "@/utils/global.js";
+// 自定义的按钮权限方法
+import { buttonPermission } from "@/utils/buttonPermission.js";
+Vue.prototype.btnPerm = buttonPermission;
+// 自定义指令 按钮权限
+import "@/utils/buttonPerm.js";
 
 // Vue.use(global);
 Vue.use(ElementUI);

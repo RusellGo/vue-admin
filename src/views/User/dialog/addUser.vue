@@ -73,6 +73,7 @@
           :cityPickerData.sync="data.cityPickerData"
         />
       </el-form-item>
+
       <el-form-item
         label="是否启用："
         :label-width="data.formLabelWidth"
@@ -95,6 +96,28 @@
           ></el-checkbox>
         </el-checkbox-group>
       </el-form-item>
+
+      <el-form-item
+        label="按钮："
+        :label-width="data.formLabelWidth"
+        prop="btnPerm"
+      >
+        <template v-if="data.getButtonPerm.length > 0">
+          <div v-for="item in data.getButtonPerm" :key="item.name">
+            <h4>{{ item.name }}</h4>
+            <template v-if="item.perm && item.perm.length > 0">
+              <el-checkbox-group v-model="data.form.btnPerm">
+                <el-checkbox
+                  v-for="btns in item.perm"
+                  :key="btns.value"
+                  :label="btns.value"
+                  >{{ btns.name }}</el-checkbox
+                >
+              </el-checkbox-group>
+            </template>
+          </div>
+        </template>
+      </el-form-item>
     </el-form>
 
     <!-- 底部按钮 -->
@@ -109,7 +132,13 @@
 
 <script>
 import sha1 from "js-sha1";
-import { GetRole, GetSystem, UserAdd, UserEdit } from "@/api/user.js";
+import {
+  GetRole,
+  GetSystem,
+  GetButtonPerm,
+  UserAdd,
+  UserEdit,
+} from "@/api/user.js";
 // 引入特殊字符处理函数 以及表单输入验证函数
 import { stripscript, validateEmail, validatePass } from "@/utils/validate.js";
 import {
@@ -245,6 +274,7 @@ export default {
         region: "",
         status: "1",
         role: [],
+        btnPerm: [],
       },
       // 城市数据
       cityPickerData: {
@@ -255,6 +285,8 @@ export default {
       },
       // 获取角色类型
       getRoleType: [],
+      // 获取按钮权限
+      getButtonPerm: [],
       //按钮加载动画
       submitLoading: false,
       // 表单验证
@@ -274,11 +306,19 @@ export default {
      * 获取角色
      */
     const getRole = () => {
+      // 获取角色类型
       GetRole({})
         .then((response) => {
           data.getRoleType = response.data.data;
         })
         .catch((error) => {});
+      // 获取按钮权限
+      GetButtonPerm({})
+        .then((response) => {
+          data.getButtonPerm = response.data.data;
+          console.log(data.getButtonPerm);
+        })
+        .catch((response) => {});
     };
 
     /**
@@ -291,7 +331,8 @@ export default {
       // 初识值处理
       let editData = props.editData;
       if (editData.id) {
-        editData.role = editData.role.split(",");
+        editData.role = editData.role ? editData.role.split(",") : [];
+        editData.btnPerm = editData.btnPerm ? editData.btnPerm.split(",") : [];
       } else {
         data.form.id && delete data.form.id;
       }
@@ -362,6 +403,7 @@ export default {
           let requestData = JSON.parse(JSON.stringify(data.form));
           requestData.role = requestData.role.join();
           requestData.region = JSON.stringify(data.cityPickerData);
+          requestData.btnPerm = requestData.btnPerm.join();
 
           // 添加状态：需要加密
           // 编辑状态：值存在，需要加密；否则删除

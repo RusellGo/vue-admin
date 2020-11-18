@@ -24,6 +24,18 @@ export function GetSystem(data) {
 }
 
 /**
+ * 获取按钮
+ * @param {*} data 
+ */
+export function GetButtonPerm(data) {
+  return service.request({
+    method: "post",
+    url: "/permButton/",
+    data
+  })
+}
+
+/**
  * 用户添加
  */
 export function UserAdd(data) {

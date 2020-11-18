@@ -27,8 +27,12 @@ router.beforeEach((to, from, next) => {
       if (store.getters["app/roles"].length === 0) {
         // 如果状态 没有权限 就获取一次用户的权限 并取得权限值
         store.dispatch("permission/getRoles").then(response => {
+          let role = response.role;
+          let button = response.button;
+          let btnPerm = response.btnPerm;
           // 修改 角色权限状态
-          store.commit("app/SET_ROLES", response);
+          store.commit("app/SET_ROLES", role);
+          store.commit("app/SET_BUTTON", btnPerm);
           // response 获取到的用户角色
           // dispatch 创建路由的actions
           store.dispatch("permission/createRouter", response).then(response => {

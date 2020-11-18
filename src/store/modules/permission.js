@@ -35,6 +35,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       GetUserRole({}).then(response => {
         let responseData = response.data.data
+        console.log(responseData);
         // resolve传递值 将请求结果返回到下一步then方法
         resolve(responseData);
       }).catch(error => {
@@ -76,6 +77,7 @@ const actions = {
             return true;
           }
 
+          // 使用系统分配的情况
           // arr.includes(value) 表示判断arr数组中是否有value这个元素，有 返回true，没有 返回false
           // return role.includes(item.meta.system);
         });

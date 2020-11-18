@@ -10,7 +10,7 @@
               v-model="category_value"
               clearable
               placeholder="请选择"
-              style="width: 100%;"
+              style="width: 100%"
             >
               <el-option
                 v-for="item in options.category"
@@ -35,7 +35,7 @@
               format="yyyy 年 MM 月 dd 日"
               value-format="yyyy-MM-dd HH:mm:ss"
               :default-time="['12:00:00', '08:00:00']"
-              style="width: 100%;"
+              style="width: 100%"
             ></el-date-picker>
           </div>
         </div>
@@ -45,7 +45,7 @@
           <label for>关键字：</label>
           <div class="content-wrap">
             <!-- <select-vue :config="data.configOption" /> -->
-            <el-select v-model="search_key" style="width: 100%;">
+            <el-select v-model="search_key" style="width: 100%">
               <el-option
                 v-for="item in search_options"
                 :key="item.value"
@@ -61,11 +61,11 @@
           v-model="search_keyWord"
           clearable
           placeholder="请输入内容"
-          style="width: 100%;"
+          style="width: 100%"
         ></el-input>
       </el-col>
       <el-col :span="2">
-        <el-button type="danger" style="width: 100%;" @click="getList"
+        <el-button type="danger" style="width: 100%" @click="getList"
           >搜索</el-button
         >
       </el-col>
@@ -73,8 +73,9 @@
         <el-button
           type="danger"
           class="pull-right"
-          style="width: 100%;"
+          style="width: 100%"
           @click="dialog_info = true"
+          v-if="btnPerm('info:add')"
           >新增</el-button
         >
       </el-col>
@@ -90,7 +91,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="40"></el-table-column>
-      <el-table-column prop="title" label="标题" width="524"></el-table-column>
+      <el-table-column prop="title" label="标题"></el-table-column>
       <el-table-column
         prop="categoryId"
         label="类型"
@@ -106,13 +107,25 @@
       <el-table-column prop="user" label="管理人" width="100"></el-table-column>
       <el-table-column label="操作" width="252">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="deleteItem(scope.row.id)"
+          <el-button
+            size="mini"
+            type="danger"
+            @click="deleteItem(scope.row.id)"
+            v-if="btnPerm('info:del')"
             >删除</el-button
           >
-          <el-button size="mini" type="success" @click="editInfo(scope.row.id)"
+          <el-button
+            size="mini"
+            type="success"
+            @click="editInfo(scope.row.id)"
+            v-if="btnPerm('info:edit')"
             >编辑</el-button
           >
-          <el-button size="mini" type="success" @click="infoDetailed(scope.row)"
+          <el-button
+            size="mini"
+            type="success"
+            @click="infoDetailed(scope.row)"
+            v-if="btnPerm('info:detailed')"
             >编辑详情</el-button
           >
         </template>
@@ -122,8 +135,17 @@
 
     <!-- 底部分页 -->
     <el-row>
-      <el-col :span="8">
-        <el-button size="small" @click="deleteAll">批量删除</el-button>
+      <el-col :span="4">
+        <el-button size="small" v-btnPerm="'info:batchDel'">测试</el-button>
+      </el-col>
+
+      <el-col :span="4">
+        <el-button
+          size="small"
+          @click="deleteAll"
+          v-if="btnPerm('info:batchDel')"
+          >批量删除</el-button
+        >
       </el-col>
       <el-col :span="16">
         <el-pagination
@@ -168,7 +190,7 @@ export default {
   components: {
     DialogInfo,
     DialogInfoEdit,
-    SelectVue
+    SelectVue,
   },
   setup(props, context) {
     /**
@@ -176,7 +198,7 @@ export default {
      */
     // 将类型传递给Dialog子组件
     const options = reactive({
-      category: []
+      category: [],
     });
     // 将编辑id传递给子组件
     const infoId = ref("");
@@ -193,12 +215,12 @@ export default {
     const search_options = reactive([
       {
         value: "id",
-        label: "ID"
+        label: "ID",
       },
       {
         value: "title",
-        label: "标题"
-      }
+        label: "标题",
+      },
     ]);
     const search_key = ref("id");
     const search_keyWord = ref("");
@@ -208,7 +230,7 @@ export default {
     // 表格数据
     const loadingData = ref(false);
     const table_data = reactive({
-      item: []
+      item: [],
     });
     const deleteInfoId = ref("");
     // 总条数
@@ -216,20 +238,20 @@ export default {
     // 页码
     const page = reactive({
       pageNumber: 1,
-      pageSize: 7
+      pageSize: 7,
     });
 
     /**
      * 方法
      */
     // 获得 每页显示多少条数据
-    const handleSizeChange = value => {
+    const handleSizeChange = (value) => {
       console.log(value);
       page.pageSize = value;
       getList();
     };
     // 获得 页码
-    const handleCurrentChange = value => {
+    const handleCurrentChange = (value) => {
       console.log(value);
       page.pageNumber = value;
       getList();
@@ -239,7 +261,7 @@ export default {
     const formatData = () => {
       let requestData = {
         pageNumber: page.pageNumber,
-        pageSize: page.pageSize
+        pageSize: page.pageSize,
       };
       // 分类ID
       if (category_value.value) {
@@ -265,7 +287,7 @@ export default {
       // 加载状态
       loadingData.value = true;
       GetList(requestData)
-        .then(result => {
+        .then((result) => {
           let data = result.data.data;
           // 更新数据
           table_data.item = data.data;
@@ -274,18 +296,18 @@ export default {
           // 表格动画
           loadingData.value = false;
         })
-        .catch(error => {
+        .catch((error) => {
           // 表格动画
           loadingData.value = false;
         });
     };
     // 点击编辑
-    const editInfo = id => {
+    const editInfo = (id) => {
       infoId.value = id;
       dialog_info_edit.value = true;
     };
     // 编辑详情
-    const infoDetailed = data => {
+    const infoDetailed = (data) => {
       // 在这里提交 解决刷新重新赋值的问题
       // context.root.$store.commit("infoDetailed/SET_ID", data.id);
       // context.root.$store.commit("infoDetailed/SET_TITLE", data.title);
@@ -293,21 +315,21 @@ export default {
         id: {
           value: data.id,
           sessionKey: "infoId",
-          session: true
+          session: true,
         },
         title: {
           value: data.title,
           sessionKey: "infoTitle",
-          session: true
-        }
+          session: true,
+        },
       });
       // 跳转页面
       context.root.$router.push({
         name: "InfoDetailed",
         params: {
           id: data.id,
-          title: data.title
-        }
+          title: data.title,
+        },
       });
     };
     /**
@@ -315,12 +337,12 @@ export default {
      */
     const { confirm } = global(); // 3.0的全局方法写法
     // 删除单项
-    const deleteItem = id => {
+    const deleteItem = (id) => {
       deleteInfoId.value = [id];
       confirm({
         content: "此操作将永久删除该信息，是否继续？！",
         tip: "警告",
-        fn: confirmDelete
+        fn: confirmDelete,
       });
     };
     // 批量删除
@@ -328,48 +350,50 @@ export default {
       if (!deleteInfoId.value || deleteInfoId.value.length == 0) {
         context.root.$message({
           message: "请选择要删除的数据！",
-          type: "error"
+          type: "error",
         });
         return false;
       }
       confirm({
         content: "此操作将永久删除选择的信息，是否继续？！",
         tip: "警告",
-        fn: confirmDelete
+        fn: confirmDelete,
       });
     };
-    const confirmDelete = value => {
+    const confirmDelete = (value) => {
       DeleteInfo({ id: deleteInfoId.value })
-        .then(result => {
+        .then((result) => {
           // 删除成功清空数据
           deleteInfoId.value = "";
           // 删除成功重新获取数据
           getList();
         })
-        .catch(error => {});
+        .catch((error) => {});
     };
     // Vuex 获取信息分类
     const getInfoCategory = () => {
       context.root.$store
         .dispatch("common/getInfoCategory", {})
-        .then(result => {
+        .then((result) => {
           options.category = result;
         })
-        .catch(error => {});
+        .catch((error) => {});
     };
     // 格式化表格 日期
     const toDate = (row, column, cellValue, index) => {
       return timestampToTime(row.createDate);
     };
     // 格式化表格 类型
-    const toCategory = row => {
+    const toCategory = (row) => {
       let categoryId = row.categoryId;
-      let categoryData = options.category.filter(item => item.id == categoryId);
+      let categoryData = options.category.filter(
+        (item) => item.id == categoryId
+      );
       return categoryData[0].category_name;
     };
     // 获得多选的数据
-    const handleSelectionChange = value => {
-      let id = value.map(item => item.id);
+    const handleSelectionChange = (value) => {
+      let id = value.map((item) => item.id);
       deleteInfoId.value = id;
     };
 
@@ -409,9 +433,9 @@ export default {
       deleteAll,
       toDate,
       toCategory,
-      handleSelectionChange
+      handleSelectionChange,
     };
-  }
+  },
 };
 </script>
 
