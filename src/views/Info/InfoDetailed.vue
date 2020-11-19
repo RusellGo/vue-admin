@@ -1,5 +1,10 @@
 <template>
-  <el-form :model="form" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+  <el-form
+    :model="form"
+    ref="ruleForm"
+    label-width="100px"
+    class="demo-ruleForm"
+  >
     <el-form-item label="信息分类：" prop="infoCategory">
       <el-select v-model="form.categoryId">
         <el-option
@@ -20,7 +25,12 @@
     </el-form-item>
 
     <el-form-item label="发布日期：" prop="publishedTime">
-      <el-date-picker v-model="form.createDate" type="date" placeholder="选择日期" disabled></el-date-picker>
+      <el-date-picker
+        v-model="form.createDate"
+        type="date"
+        placeholder="选择日期"
+        disabled
+      ></el-date-picker>
     </el-form-item>
 
     <el-form-item label="详细内容：" prop="detailedContent">
@@ -28,14 +38,16 @@
     </el-form-item>
 
     <el-form-item>
-      <el-button type="primary" @click="submit" :loading="data.submitLoading">保存</el-button>
+      <el-button type="primary" @click="submit" :loading="data.submitLoading"
+        >保存</el-button
+      >
     </el-form-item>
   </el-form>
 </template>
 
 <script>
 import { GetList, EditInfo } from "@/api/news.js";
-import { ref, reactive, onMounted } from "@vue/composition-api";
+import { ref, reactive, onMounted, onActivated } from "@vue/composition-api";
 import { timestampToTime } from "@/utils/common.js";
 // 导入缩略图组件
 import UploadImg from "components/UploadImg";
@@ -49,7 +61,7 @@ export default {
   name: "InfoDetailed",
   components: {
     quillEditor: quillEditor,
-    UploadImg: UploadImg
+    UploadImg: UploadImg,
   },
   setup(props, context) {
     // 信息分类数据
@@ -59,21 +71,21 @@ export default {
         context.root.$store.getters["infoDetailed/infoId"],
       category: [],
       editorOption: {},
-      submitLoading: false
+      submitLoading: false,
     });
     const form = reactive({
       categoryId: "",
       title: "",
       createDate: "",
       content: "",
-      imgUrl: ""
+      imgUrl: "",
     });
     // 图片上传配置
     const uploadImgConfig = reactive({
       uploadUrl: "http://up-z2.qiniup.com",
       ak: "",
       sk: "",
-      buckety: ""
+      buckety: "",
     });
 
     /**
@@ -82,10 +94,10 @@ export default {
     const getInfoCategory = () => {
       context.root.$store
         .dispatch("common/getInfoCategory", {})
-        .then(result => {
+        .then((result) => {
           data.category = result;
         })
-        .catch(error => {});
+        .catch((error) => {});
     };
 
     /**
@@ -95,10 +107,10 @@ export default {
       let requestData = {
         pageNumber: 1,
         pageSize: 1,
-        id: data.id
+        id: data.id,
       };
       GetList(requestData)
-        .then(result => {
+        .then((result) => {
           let resultData = result.data.data.data[0];
           form.categoryId = resultData.categoryId;
           form.title = resultData.title;
@@ -106,7 +118,7 @@ export default {
           form.content = resultData.content;
           form.imgUrl = requestData.imgUrl;
         })
-        .catch(error => {});
+        .catch((error) => {});
     };
 
     /**
@@ -116,14 +128,14 @@ export default {
       if (form.title == "") {
         context.root.$message({
           message: "标题不能为空",
-          type: "error"
+          type: "error",
         });
         return false;
       }
       if (form.content == "") {
         context.root.$message({
           message: "内容不能为空",
-          type: "error"
+          type: "error",
         });
         return false;
       }
@@ -132,18 +144,18 @@ export default {
         categoryId: form.categoryId,
         title: form.title,
         content: form.content,
-        imgUrl: form.imgUrl
+        imgUrl: form.imgUrl,
       };
       data.submitLoading = true;
       EditInfo(requestData)
-        .then(result => {
+        .then((result) => {
           context.root.$message({
             message: result.data.message,
-            type: "success"
+            type: "success",
           });
           data.submitLoading = false;
         })
-        .catch(error => {
+        .catch((error) => {
           data.submitLoading = false;
         });
     };
@@ -156,13 +168,21 @@ export default {
       getInfo();
     });
 
+    // 该生命周期配合keep-alive一起使用 进入页面
+    onActivated(() => {
+      data.id =
+        context.root.$route.params.id ||
+        context.root.$store.getters["infoDetailed/infoId"];
+      getInfo();
+    });
+
     return {
       data,
       form,
       uploadImgConfig,
-      submit
+      submit,
     };
-  }
+  },
 };
 </script>
 

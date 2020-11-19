@@ -2,7 +2,13 @@
   <div id="main-wrap">
     <div class="main-content">
       <div class="content">
-        <router-view />
+        <!-- 子路由渲染区 -->
+        <keep-alive>
+          <!-- 需要缓存的 -->
+          <router-view v-if="$route.meta.keepAlive" />
+        </keep-alive>
+        <!-- 不需要缓存 -->
+        <router-view v-if="!$route.meta.keepAlive" />
       </div>
     </div>
   </div>
@@ -12,7 +18,7 @@
 import { ref } from "@vue/composition-api";
 export default {
   name: "Main",
-  setup(props, context) {}
+  setup(props, context) {},
 };
 </script>
 

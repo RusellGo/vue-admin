@@ -35,7 +35,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       GetUserRole({}).then(response => {
         let responseData = response.data.data
-        console.log(responseData);
         // resolve传递值 将请求结果返回到下一步then方法
         resolve(responseData);
       }).catch(error => {

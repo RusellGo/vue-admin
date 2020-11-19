@@ -88,6 +88,7 @@ export const asyncRouterMap = [
         name: "InfoList",
         component: () => import("../views/Info/InfoList.vue"),
         meta: {
+          keepAlive: true,
           role: ["业务员"],
           name: "信息列表"
         }
@@ -97,6 +98,7 @@ export const asyncRouterMap = [
         name: "InfoCategory",
         component: () => import("../views/Info/InfoCategory.vue"),
         meta: {
+          keepAlive: true,
           role: ["业务员"],
           name: "信息分类"
         }
@@ -107,6 +109,7 @@ export const asyncRouterMap = [
         hidden: true,
         component: () => import("../views/Info/InfoDetailed.vue"),
         meta: {
+          keepAlive: true,
           role: ["业务员"],
           name: "信息详情"
         }

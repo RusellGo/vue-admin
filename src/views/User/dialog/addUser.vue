@@ -306,19 +306,24 @@ export default {
      * 获取角色
      */
     const getRole = () => {
-      // 获取角色类型
-      GetRole({})
-        .then((response) => {
-          data.getRoleType = response.data.data;
-        })
-        .catch((error) => {});
-      // 获取按钮权限
-      GetButtonPerm({})
-        .then((response) => {
-          data.getButtonPerm = response.data.data;
-          console.log(data.getButtonPerm);
-        })
-        .catch((response) => {});
+      // 优化
+      if (data.getRoleType.length === 0) {
+        // 获取角色类型
+        GetRole({})
+          .then((response) => {
+            data.getRoleType = response.data.data;
+          })
+          .catch((error) => {});
+      }
+      // 优化
+      if (data.getButtonPerm.length === 0) {
+        // 获取按钮权限
+        GetButtonPerm({})
+          .then((response) => {
+            data.getButtonPerm = response.data.data;
+          })
+          .catch((response) => {});
+      }
     };
 
     /**
