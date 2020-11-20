@@ -389,6 +389,9 @@ export default {
       let categoryData = options.category.filter(
         (item) => item.id == categoryId
       );
+      if (!categoryData) {
+        return false;
+      }
       return categoryData[0].category_name;
     };
     // 获得多选的数据

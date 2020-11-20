@@ -69,11 +69,19 @@ module.exports = {
     hot: true, // 开启热加载
     hotOnly: false,
     proxy: {// 设置代理
-      "/devApi": {
+      // "/devApi": {
+      //   target: "http://www.web-jshtml.cn/productapi/token",
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     "^/devApi": ""
+      //   }
+      // }
+      [process.env.VUE_APP_API]: {
         target: "http://www.web-jshtml.cn/productapi/token",
+        // target: "http://www.web-jshtml.cn/vue_admin_api/token",
         changeOrigin: true,
         pathRewrite: {
-          "^/devApi": ""
+          ["^" + process.env.VUE_APP_API]: ""
         }
       }
     },

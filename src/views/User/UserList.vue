@@ -116,7 +116,7 @@ export default {
     const data = reactive({
       // Select 组件配置参数
       configOption: {
-        init: ["name", "phone", "email"],
+        init: ["truename", "phone", "email"],
       },
       // 下拉菜单的数据
       selectData: {},
@@ -269,9 +269,17 @@ export default {
 
     // 搜索
     const searchUser = () => {
+      // if (!data.searchKeywords) {
+      //   context.root.$message({
+      //     message: "请输入搜素关键字",
+      //     type: "error",
+      //   });
+      //   return false;
+      // }
       let requestData = {
         [data.selectData.value]: data.searchKeywords,
       };
+      console.log(requestData);
       // 调用table-vue组件的方法 传参并刷新数据
       context.refs.userTable.paramsRefreshData(requestData);
     };

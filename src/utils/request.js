@@ -6,7 +6,8 @@ import { getToken, getUsername } from "@/utils/app.js";
 // 创建axios
 // Vue3.0后台管理系统API地址：http://www.web-jshtml.cn/productApi
 
-const BASEURL = process.env.NODE_ENV === "production" ? "" : "/devApi";
+// const BASEURL = process.env.NODE_ENV === "production" ? "" : "/devApi";
+const BASEURL = process.env.NODE_ENV === "production" ? process.env.VUE_APP_API : process.env.VUE_APP_API;
 
 const service = axios.create({
   baseURL: BASEURL,

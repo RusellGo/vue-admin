@@ -4,7 +4,7 @@
       <img src="~@/assets/logo.png" alt="logo" />
     </h1>
     <el-menu
-      default-active="1-4-1"
+      :default-active="defaultActive"
       class="el-menu-vertical-demo"
       :collapse="isCollapse"
       background-color="transparent"
@@ -17,7 +17,7 @@
           <!-- 一级菜单 -->
           <template slot="title" :index="item.path">
             <svg-icon :iconClass="item.meta.icon" :className="item.meta.icon" />
-            <span slot="title">{{ item.meta.name}}</span>
+            <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 二级菜单 -->
           <template v-for="subItem in item.children">
@@ -25,7 +25,8 @@
               v-if="!subItem.hidden"
               :key="subItem.id"
               :index="subItem.path"
-            >{{ subItem.meta.name }}</el-menu-item>
+              >{{ subItem.meta.name }}</el-menu-item
+            >
           </template>
         </el-submenu>
       </template>
@@ -42,11 +43,21 @@ export default {
     const isCollapse = computed(() => context.root.$store.state.app.isCollapse);
     const routers = reactive(context.root.$router.options.routes);
 
+    /**
+     * 监听路由的变化 让页面在刷新后仍然选中当前菜单
+     */
+    const defaultActive = computed(() => {
+      const route = context.root.$route;
+      const { path } = route;
+      return path;
+    });
+
     return {
       isCollapse,
-      routers
+      routers,
+      defaultActive,
     };
-  }
+  },
 };
 </script>
 

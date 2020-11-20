@@ -24,7 +24,7 @@ export default {
       selectValue: "",
       initOptions: [],
       options: [
-        { value: "name", label: "姓名" },
+        { value: "truename", label: "姓名" },
         { value: "phone", label: "手机号" },
         { value: "email", label: "邮箱" },
         { value: "id", label: "ID" },
@@ -56,6 +56,8 @@ export default {
       data.initOptions = optionArr;
       // 初始化搜索类型
       data.selectValue = optionArr[0].value;
+
+      context.emit("update:selectData", optionArr[0]);
     };
 
     /**
@@ -71,8 +73,6 @@ export default {
      */
     onMounted(() => {
       initOption();
-      // 下拉框初识值传递 用于搜索功能
-      context.emit("update:selectData", data.initOptions[0]);
     });
 
     return {
