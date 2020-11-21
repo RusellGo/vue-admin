@@ -61,6 +61,25 @@ export const defaultRouterMap = [
       }
     ]
   },
+  // 404页面
+  {
+    path: "/page404",
+    meta: {
+      name: "404",
+      icon: "404"
+    },
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: "/404",
+        component: () => import("../views/404.vue"),
+        meta: {
+          name: "404"
+        }
+      }
+    ]
+  }
 ];
 
 /**
@@ -140,6 +159,11 @@ export const asyncRouterMap = [
         }
       }
     ]
+  },
+  {
+    path: "*",
+    redirect: "/404",
+    hidden: true,
   }
 ]
 

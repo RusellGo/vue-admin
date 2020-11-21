@@ -20,6 +20,17 @@ export function GetUserRole(data) {
   });
 }
 /**
+ * 退出
+ * @param {*} data 
+ */
+export function Logout(data) {
+  return service.request({
+    method: "post",
+    url: "/logout/",
+    data
+  });
+}
+/**
  * 登录
  */
 export function Login(data) {

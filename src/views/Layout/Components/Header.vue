@@ -8,7 +8,7 @@
         <img class="pull-left" src="~@/assets/logo.png" alt />
         {{ username }}
       </div>
-      <div class="header-icon pull-left" @click="exit">
+      <div class="header-icon pull-left" @click="logout">
         <svg-icon iconClass="exit" class-name="exit" />
       </div>
     </div>
@@ -28,18 +28,31 @@ export default {
       context.root.$store.commit("app/SET_COLLAPSE");
     };
     // 退出功能
-    const exit = () => {
-      context.root.$store.dispatch("app/exit").then(() => {
-        context.root.$router.push({ name: "Login" });
+    const logout = () => {
+      context.root.$store.dispatch("app/logout").then((response) => {
+        if (response.resCode === 0) {
+          // 清空动态路由
+          context.root.$store.commit("permission/SET_ROUTER", []);
+          let allRouters = context.root.$store.getters["permission/allRouters"];
+          // 更新路由参数
+          context.root.$router.options.routes = allRouters;
+
+          context.root.$message({
+            message: "退出成功",
+            type: "success",
+          });
+
+          context.root.$router.push({ name: "Login" });
+        }
       });
     };
 
     return {
       username,
       navMenuState,
-      exit
+      logout,
     };
-  }
+  },
 };
 </script>
 

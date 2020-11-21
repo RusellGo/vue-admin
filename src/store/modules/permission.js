@@ -80,6 +80,8 @@ const actions = {
           // arr.includes(value) 表示判断arr数组中是否有value这个元素，有 返回true，没有 返回false
           // return role.includes(item.meta.system);
         });
+        // 404页面路由处理
+        newRouters.push(asyncRouterMap[asyncRouterMap.length - 1]);
         // 更新路由
         context.commit("SET_ROUTER", newRouters);
       }

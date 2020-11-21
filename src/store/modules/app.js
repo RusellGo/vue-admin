@@ -1,4 +1,4 @@
-import { Login } from "@/api/login.js";
+import { Login, Logout } from "@/api/login.js";
 import { setToken, setUsername, removeToken, getUsername, getToken, removeUsername } from "@/utils/app.js";
 
 const state = {
@@ -47,13 +47,17 @@ const actions = {
       })
     })
   },
-  exit(context) {
+  logout(context) {
     return new Promise((resolve, reject) => {
-      removeToken();
-      removeUsername();
-      context.commit("SET_TOKEN", "");
-      context.commit("SET_USERNAME", "");
-      resolve()
+      Logout().then(response => {
+        let data = response.data;
+        removeToken();
+        removeUsername();
+        context.commit("SET_TOKEN", "");
+        context.commit("SET_USERNAME", "");
+        context.commit("SET_ROLES", []);
+        resolve(data);
+      }).catch(error => { });
     })
   }
 }
